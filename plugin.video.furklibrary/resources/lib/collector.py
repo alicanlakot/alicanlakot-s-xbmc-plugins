@@ -52,8 +52,9 @@ def AddOption(text, isFolder, mode, name=''):
 def AddonMenu():  #homescreen
 	print 'FurkLibrary menu'
 	AddOption('Run',False, 'AU')
-	AddOption('Delete History',False, 'DeleteHistory')
 	AddOption('Search',True,'recent_queries&query=')
+	AddOption('Delete History and Dirs',False, 'DeleteHistory')
+	AddOption('About',False, 'about')
 	xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 def addFiles(did,files):

@@ -24,7 +24,7 @@ import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 __plugin__ = 'Furk.net Library'
 __author__ = 'Alican Lakot'
 __url__ = 'http://www.furk.net/?INVITE=1216084'
-__version__ = '1.0.1'
+__version__ = '1.0.2'
 __settings__ = xbmcaddon.Addon(id='plugin.video.furklibrary')
 ADDON = xbmcaddon.Addon(id='plugin.video.furklibrary')
 
@@ -92,6 +92,11 @@ if(params['action'] == 'files'):
 elif(params['action'] == 'play'):
         # Play a file
         printer.playFile(params['url'])
+
+elif(params['action'] == 'about'):
+        # Play a file
+	collector.Notification(__plugin__,__version__)
+
 
 elif(params['action'] == 'recent_queries'):
         # Show previous searches

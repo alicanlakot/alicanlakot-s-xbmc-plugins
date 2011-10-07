@@ -18,7 +18,7 @@
 
 import sys, re, time, os, shutil
 import urllib
-import xbmc,xbmcgui,xbmcplugin
+import xbmc,xbmcgui,xbmcplugin,xbmcaddon
 import getter,printer
 
 from resources.lib.utils.titles.series import SeriesParser
@@ -52,8 +52,8 @@ def AddOption(text, isFolder, mode, name=''):
 def AddonMenu():  #homescreen
 	print 'FurkLibrary menu'
 	AddOption('Run',False, 'AU')
-	AddOption('Delete History',False, 'DeleteHistory')
 	AddOption('Search',True,'recent_queries&query=')
+	AddOption('Delete History and Dirs',False, 'DeleteHistory')
 	xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 def addFiles(did,files):
