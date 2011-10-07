@@ -17,7 +17,7 @@
     <string id="30401">    TV show directory</string>	
     <string id="30402">Use filters</string>
     <string id="30403">    Released later than</string>
-	<string id="30500">Best quality (Not implemented)</string>
+	<string id="30500">Auto choose best quality</string>
     <string id="30501">Auto play mirrors</string>
 	<string id="30600">Use automatic updates</string>
     <string id="30601">    Update timer</string>

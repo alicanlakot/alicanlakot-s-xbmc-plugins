@@ -18,7 +18,7 @@
 
 import sys, re, time, os, shutil
 import urllib
-import xbmc,xbmcgui,xbmcplugin
+import xbmc,xbmcgui,xbmcplugin,xbmcaddon
 import getter,printer
 
 from resources.lib.utils.titles.series import SeriesParser
@@ -28,10 +28,19 @@ from resources.lib.utils.titles.parser import TitleParser, ParseWarning
 #import feedparser
 
 __settings__ = sys.modules[ "__main__" ].__settings__
+ADDON = xbmcaddon.Addon(id='plugin.video.furklibrary')
 ##MOVIES_PATH= os.path.join('C:/Users/altasak/XBMC/movies','')
 ##TV_SHOWS_PATH = os.path.join('C:/Users/altasak/XBMC/shows2','')
-MOVIES_PATH = os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.furklibrary/movies'), '')
-TV_SHOWS_PATH = os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.furklibrary/tvshows'), '')
+if ADDON.getSetting('movie_custom_directory') == "true":
+	MOVIES_PATH = ADDON.getSetting('movie_directory')
+else:
+	MOVIES_PATH = os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.furklibrary/movies'), '')
+
+if ADDON.getSetting('tv_show_custom_directory') == "true":
+	TV_SHOWS_PATH = ADDON.getSetting('tv_show_directory')
+else:
+	TV_SHOWS_PATH = os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.furklibrary/tvshows'), '')
+
 OTHERS_PATH = os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.furklibrary/others'), '')
 HISTORY_FILE = os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.furklibrary'), 'history.txt')
 		
@@ -41,7 +50,7 @@ def AddOption(text, isFolder, mode, name=''):
 	return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=li, isFolder=isFolder)
 
 def AddonMenu():  #homescreen
-	print 'IceLibrary menu'
+	print 'FurkLibrary menu'
 	AddOption('Run',False, 'AU')
 	AddOption('Delete History',False, 'DeleteHistory')
 	AddOption('Search',True,'recent_queries&query=')
@@ -118,8 +127,8 @@ def getFeed(url):
                         
 def DeleteHistory():
 	dialog = xbmcgui.Dialog()
-	if dialog.yesno("Remove", "Do you want to remove favorites.dat?"):
-		print "Removing favorites.dat"
+	if dialog.yesno("Remove", "Do you want to remove history file?"):
+		print "Removing history.txt"
 		try:
 			os.remove(HISTORY_FILE)
 		except:
@@ -129,9 +138,8 @@ def DeleteHistory():
 			RemoveDirectory(TV_SHOWS_PATH)
 			RemoveDirectory(OTHERS_PATH)
 			xbmc.executebuiltin('CleanLibrary(video)')
-			Notification("File deleted", "favorites.dat was deleted.")
 		except:
-			Notification("File not found", "No favorites.dat to delete.")
+			Notification("Error during remove of directories")
 
 def SetupAutoUpdate():
 	source_path = os.path.join(xbmc.translatePath('special://profile/'), 'autoexec.py')

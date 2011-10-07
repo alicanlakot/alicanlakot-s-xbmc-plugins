@@ -1,6 +1,6 @@
 '''
-    Furk.net player for XBMC
-    Copyright (C) 2010 Gpun Yog
+    Furk.net player / scraper for XBMC
+    Copyright (C) 2011 Alican Lakot
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,10 +22,11 @@ import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 
 # Plugin constants
 __plugin__ = 'Furk.net Library'
-__author__ = 'Gpun Yog'
+__author__ = 'Alican Lakot'
 __url__ = 'http://www.furk.net/t/xbmc'
-__version__ = '1.0.0'
+__version__ = '1.0.1'
 __settings__ = xbmcaddon.Addon(id='plugin.video.furklibrary')
+ADDON = xbmcaddon.Addon(id='plugin.video.furklibrary')
 
 print "[PLUGIN] '%s: version %s' initialized!" % (__plugin__, __version__)
 
@@ -40,29 +41,34 @@ def parse_qs(u):
 ###################
 
 def AutoUpdateLibrary():
-	##if ADDON.getSetting('auto_update') == "false":
-		##return
+
 	
 	print "FurkLibrary running an automatic update"
 	
-	xbmc.executebuiltin('CancelAlarm(updateFurklibrary)')
-	
+	if ADDON.getSetting('auto_update') == "true":
+		xbmc.executebuiltin('CancelAlarm(updateFurklibrary)')
+
 	timer_amounts = {}
-	timer_amounts['0'] = '120'
-	timer_amounts['1'] = '300'
-	timer_amounts['2'] = '600'
-	timer_amounts['3'] = '900'
-	timer_amounts['4'] = '1440'
+	timer_amounts['0'] = '60'
+	timer_amounts['1'] = '120'
+	timer_amounts['2'] = '300'
+	timer_amounts['3'] = '600'
+	timer_amounts['4'] = '900'
+	timer_amounts['5'] = '1440'
 
 	#only do this if we are not playing anything
 	if xbmc.Player().isPlaying() == False:
-		dirs = getter.getDirs()
+                pxDialog = xbmcgui.DialogProgress()
+                ret = pxDialog.create('XBMC', 'Getting dirs...','Please wait')
+                dirs = getter.getDirs()
+                pxDialog.close()
 		if dirs:
                         collector.collect(dirs)
                         xbmc.executebuiltin('UpdateLibrary(video)')
 		
 	#reset the timer
-	xbmc.executebuiltin('AlarmClock(updateFurklibrary,XBMC.RunScript(special://home/addons/plugin.video.furklibrary/default.py,0,action="AU"),' + timer_amounts['0'] + ',False)')
+	if ADDON.getSetting('auto_update') == "true":
+		xbmc.executebuiltin('AlarmClock(updateFurklibrary,XBMC.RunScript(special://home/addons/plugin.video.furklibrary/default.py,0,action="AU"),' + timer_amounts[ADDON.getSetting('update_timer')] + ',False)')
 
 	print "FurkLibrary update complete"
 	return;
@@ -81,7 +87,7 @@ xbmc.log('_params=%s' % params)
 if(params['action'] == 'files'):
         # Enter a directory | open torrent and list files
         files = getter.getFiles(params['did'])
-        printer.printFiles(files)
+        collector.printFiles(files,params['did'])
 
 elif(params['action'] == 'play'):
         # Play a file
@@ -114,6 +120,15 @@ elif(params['action'] == 'search'):
                 dirs = getter.searchDirs(query)
                 printer.printDirs(dirs)
 
+elif(params['action'] == 'scrapeDir'):
+        did = params['did']
+        collector.Notification("Scraping" , " files")
+        files = getter.getFiles(did)
+	scraped = collector.addFiles(did,files)
+	collector.Notification("Scraped",str(scraped) + " files")
+        xbmc.executebuiltin('UpdateLibrary(video)')
+        
+
 elif(params['action'] == 'playMe'):
         # Player
         did = params['did']
@@ -132,12 +147,26 @@ elif(params['action'] == 'playMe'):
         else:
                 name = '@Search...'
                 url = sys.argv[0] + '?action=search&query='
-                listitem = xbmcgui.ListItem()
-	        listitem.setLabel(name)
                 xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),False,xbmcgui.ListItem())
         #collector.Notification("hello","mello")
         
-
+elif(params['action'] == 'playMenow'):
+        # Player
+        did = params['did']
+        fid = params['fid']
+        name = ''
+        play_url = collector.playMe(did,fid,name)
+        if play_url:
+                #xbmc.Player().play(play_url)
+		collector.Notification("Found"," and playing!")
+		time.sleep(1)
+                listitem = xbmcgui.ListItem(name, iconImage="DefaultVideoBig.png", thumbnailImage='', path=play_url)
+	        listitem.setLabel(name)
+		listitem.setProperty("IsPlayable", "true")
+		xbmc.Player().play(urllib.unquote(play_url), listitem)
+		#time.sleep(20)
+        else:
+                collector.Notification("hello","mello")
 
 else:
         # torrents a root Directories 

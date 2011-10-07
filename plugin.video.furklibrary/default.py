@@ -1,6 +1,6 @@
 '''
-    Furk.net player for XBMC
-    Copyright (C) 2010 Gpun Yog
+    Furk.net player / scraper for XBMC
+    Copyright (C) 2011 Alican Lakot
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
@@ -22,10 +22,11 @@ import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 
 # Plugin constants
 __plugin__ = 'Furk.net Library'
-__author__ = 'Gpun Yog'
-__url__ = 'http://www.furk.net/t/xbmc'
-__version__ = '1.0.0'
+__author__ = 'Alican Lakot'
+__url__ = 'http://www.furk.net/?INVITE=1216084'
+__version__ = '1.0.1'
 __settings__ = xbmcaddon.Addon(id='plugin.video.furklibrary')
+ADDON = xbmcaddon.Addon(id='plugin.video.furklibrary')
 
 print "[PLUGIN] '%s: version %s' initialized!" % (__plugin__, __version__)
 
@@ -40,24 +41,25 @@ def parse_qs(u):
 ###################
 
 def AutoUpdateLibrary():
-	##if ADDON.getSetting('auto_update') == "false":
-		##return
+
 	
 	print "FurkLibrary running an automatic update"
 	
-	xbmc.executebuiltin('CancelAlarm(updateFurklibrary)')
-	
+	if ADDON.getSetting('auto_update') == "true":
+		xbmc.executebuiltin('CancelAlarm(updateFurklibrary)')
+
 	timer_amounts = {}
-	timer_amounts['0'] = '120'
-	timer_amounts['1'] = '300'
-	timer_amounts['2'] = '600'
-	timer_amounts['3'] = '900'
-	timer_amounts['4'] = '1440'
+	timer_amounts['0'] = '60'
+	timer_amounts['1'] = '120'
+	timer_amounts['2'] = '300'
+	timer_amounts['3'] = '600'
+	timer_amounts['4'] = '900'
+	timer_amounts['5'] = '1440'
 
 	#only do this if we are not playing anything
 	if xbmc.Player().isPlaying() == False:
                 pxDialog = xbmcgui.DialogProgress()
-                ret = pxDialog.create('XBMC', 'Getting dirs...')
+                ret = pxDialog.create('XBMC', 'Getting dirs...','Please wait')
                 dirs = getter.getDirs()
                 pxDialog.close()
 		if dirs:
@@ -65,7 +67,8 @@ def AutoUpdateLibrary():
                         xbmc.executebuiltin('UpdateLibrary(video)')
 		
 	#reset the timer
-	xbmc.executebuiltin('AlarmClock(updateFurklibrary,XBMC.RunScript(special://home/addons/plugin.video.furklibrary/default.py,0,action="AU"),' + timer_amounts['0'] + ',False)')
+	if ADDON.getSetting('auto_update') == "true":
+		xbmc.executebuiltin('AlarmClock(updateFurklibrary,XBMC.RunScript(special://home/addons/plugin.video.furklibrary/default.py,0,action="AU"),' + timer_amounts[ADDON.getSetting('update_timer')] + ',False)')
 
 	print "FurkLibrary update complete"
 	return;

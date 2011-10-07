@@ -7,7 +7,7 @@
 	</extension>
 	<extension point="xbmc.addon.metadata">
 		<summary>
-			Plays video torrents from 'My Files :: Finished'. Check www.furk.net/text/mc for more info.
+			Scrapes video torrents from 'My Files :: Finished' into your library. Check www.furk.net/text/mc for more info.
 	   	</summary>
 		<description>
 Furk.net is a free file hosting with one special feature - a BitTorrent proxy. 

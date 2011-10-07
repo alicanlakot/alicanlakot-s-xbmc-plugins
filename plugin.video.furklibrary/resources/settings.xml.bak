@@ -21,7 +21,7 @@
 	</category>
 	<category label="Auto-update">
 		<setting id="auto_update" type="bool" label="30600" default="false"/>
-	    <setting id="update_timer" type="enum" values="1h|2h|5h|10h|15h|24h" label="30601" default="1" enable="!eq(-1,false)"/>
+	    <setting id="update_timer" type="enum" values="2h|5h|10h|15h|24h" label="30601" default="1" enable="!eq(-1,false)"/>
 	</category>
 </settings>
 
