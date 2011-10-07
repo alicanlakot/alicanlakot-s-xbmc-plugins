@@ -1,0 +1,8 @@
+[B]1.2.0[/B]
+- Move to GitHub
+
+[B]1.1.0[/B]
+- Borked zip file (removed _MAC folder from zip)
+
+[B]1.0.0[/B]
+- Initial repository setup
