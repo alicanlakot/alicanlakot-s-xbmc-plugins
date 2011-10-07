@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon	id="repository.mortstar.addons"
-		name="mortstar's repo"
-		version="1.2.0"
+<addon	id="repository.alicanlakot.addons"
+		name="alicanlakot's repo"
+		version="1.0.0"
 		provider-name="mortstar">
 	<extension	point="xbmc.addon.repository"
 				name="mortstar's repo">
@@ -10,8 +10,8 @@
 		<datadir zip="true">https://github.com/alicanlakot/alicanlakot-s-xbmc-plugins/raw/master/repo/</datadir>
 	</extension>
 	<extension point="xbmc.addon.metadata">
-		<summary>Install mortstar's repo</summary>
-		<description>Download and install mortstar's repo</description>
+		<summary>Install alicanlakot's repo</summary>
+		<description>Download and install alicanlakot's repo</description>
 		<disclaimer></disclaimer>
 		<platform>all</platform>
 	</extension>
