@@ -93,14 +93,6 @@ def playMe(did,fid,name):
 
         
         if not found:
-                ##Notification("not found,querying")
-                dirs = getter.searchDirs(name)
-                ##printer.printDirs(dirs)
-                dialog = xbmcgui.Dialog()
-                Notification (" Not available", " File not available anymore ")
-                run = 'import time;time.sleep(5);XBMC.RunScript(special://home/addons/plugin.video.furklibrary/default.py,' + sys.argv[1] + ',action="search")'
-                xbmc.log('runcmd=%s' % run)
-                xbmc.executebuiltin(run)
                 return None
                 #dialog = xbmcgui.Dialog()
                 #quality_select = dialog.select('Select quality', dirs[0].getElementsByTagName('name').item(0).firstChild.data)

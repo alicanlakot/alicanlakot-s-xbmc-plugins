@@ -24,7 +24,7 @@ import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 __plugin__ = 'Furk.net Library'
 __author__ = 'Alican Lakot'
 __url__ = 'http://www.furk.net/?INVITE=1216084'
-__version__ = '1.0.2'
+__version__ = '1.0.3'
 __settings__ = xbmcaddon.Addon(id='plugin.video.furklibrary')
 ADDON = xbmcaddon.Addon(id='plugin.video.furklibrary')
 
@@ -150,10 +150,15 @@ elif(params['action'] == 'playMe'):
 		xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),True,listitem)
 		#time.sleep(20)
         else:
-                name = '@Search...'
+                #goodname,path = collector.nameCheck(name)
                 url = sys.argv[0] + '?action=search&query='
+                dirs = getter.searchDirs(name)
+                if dirs:
+                        collector.Notification("Not available anymore but found a similar file:",dirs[0].getElementsByTagName('name').item(0).firstChild.data)
+                else:
+                        collector.Notification("Not available anymore","try searching using the plugin later")
                 xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),False,xbmcgui.ListItem())
-        #collector.Notification("hello","mello")
+        
         
 elif(params['action'] == 'playMenow'):
         # Player
