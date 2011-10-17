@@ -117,8 +117,14 @@ elif(params['action'] == 'search_test'):
 
 elif(params['action'] == 'movielens'):
         # Search
-        dirs = collector.getMovieLens()
-        printer.printDirs(dirs)
+
+	url1 = "http://movielens.org/publishServer?format=html&feedId=2521&key=20111016082621&numItems=15&page=1"
+	url2 = "http://movielens.org/publishServer?format=html&feedId=2522&key=20111017081653&numItems=15&page=1"
+        dirs1 = collector.getMovieLens(url1)
+	dirs2 = collector.getMovieLens(url2)
+	myallDirs = dirs1 + dirs2
+        printer.printDirs(myallDirs)
+
 
 
 elif(params['action'] == 'search'):
