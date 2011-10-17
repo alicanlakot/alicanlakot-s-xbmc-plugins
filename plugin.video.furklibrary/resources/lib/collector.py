@@ -17,13 +17,15 @@
 '''
 
 import sys, re, time, os, shutil
-import urllib
+import urllib,urllib2
 import xbmc,xbmcgui,xbmcplugin,xbmcaddon
 import getter,printer
 
 from resources.lib.utils.titles.series import SeriesParser
 from resources.lib.utils.titles.movie import MovieParser
 from resources.lib.utils.titles.parser import TitleParser, ParseWarning
+from resources.lib.BeautifulSoup import BeautifulSoup
+
 
 #import feedparser
 
@@ -52,6 +54,7 @@ def AddOption(text, isFolder, mode, name=''):
 def AddonMenu():  #homescreen
 	print 'FurkLibrary menu'
 	AddOption('Run',False, 'AU')
+	AddOption('MovieLens',True, 'movielens')
 	AddOption('Search',True,'recent_queries&query=')
 	AddOption('Delete History and Dirs',False, 'DeleteHistory')
 	AddOption('About',False, 'about')
@@ -399,3 +402,59 @@ def printFiles(files,did):
                 except:
                         Notification("error","error")
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
+
+def getMovieLens():
+        url="http://movielens.org/publishServer?format=html&feedId=2521&key=20111016082621&numItems=15&page=1"
+        req = urllib2.Request(url)
+        req.add_header('User-Agent', "%s %s" % (sys.modules[ "__main__" ].__plugin__, sys.modules[ "__main__" ].__version__))
+        response = urllib2.urlopen(req)
+        soup = BeautifulSoup(response)
+        mySpans= soup.findAll('span',attrs={"class" : "movieTitle"})
+	##mySpans = mySpans[1], mySpans[2]
+        mydirs = list()
+	pDialog = xbmcgui.DialogProgress()
+	ret = pDialog.create('XBMC', 'Initializing script...')
+	i = 0.0
+	total = len(mySpans)
+
+
+        for span in mySpans:
+            i += 1
+            percent = int( (i * 100) / total)
+            pDialog.update(percent, 'Searching ' + span.a.string,str(int(i))+'/'+str(total))
+
+            print span.a.string
+            s = span.a.string
+            year = s[len(s)-7 : len(s)]
+            year = year.replace('(','').replace(')','')
+	    year = year.strip()
+            s = s.split('(',1)[0].strip()
+            s = s.replace(', The','')
+				
+            #print s
+	    xbmc.log('s=%s' % s)
+            dirs= getter.searchDirs(s + ' ' + year)
+            if dirs:
+                for d in dirs:
+                            id = d.getElementsByTagName('id').item(0).firstChild.data
+                            name = d.getElementsByTagName('name').item(0).firstChild.data
+                            date = d.getElementsByTagName('date').item(0).firstChild.data
+                            thumb = d.getElementsByTagName('thumb').item(0).firstChild.data
+                            url = sys.argv[0] + '?action=files&did=' + id
+			    clean = CleanFileName(name,False)
+		            clean = clean.replace('(', '')
+                            clean = clean.replace('[', '')
+                            clean = clean.replace(']', '')
+			    clean = clean.replace(')', '')
+
+                            if s.lower() in clean.lower() and year in name:
+			   	##xbmc.log('name=%s' % name)
+				mydirs.append(d)
+	    if (pDialog.iscanceled()):
+		print 'Canceled search'
+	        pDialog.close()
+                return
+
+
+        pDialog.close() 
+        return mydirs  

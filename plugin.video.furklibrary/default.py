@@ -115,6 +115,12 @@ elif(params['action'] == 'search_test'):
         dirs = getter.searchDirs('xxx')
         printer.printDirs(dirs)
 
+elif(params['action'] == 'movielens'):
+        # Search
+        dirs = collector.getMovieLens()
+        printer.printDirs(dirs)
+
+
 elif(params['action'] == 'search'):
         # Search
         keyboard = xbmc.Keyboard(urllib.unquote(params['query']), 'Search')
