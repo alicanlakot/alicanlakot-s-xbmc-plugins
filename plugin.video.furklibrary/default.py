@@ -24,7 +24,7 @@ import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 __plugin__ = 'Furk.net Library'
 __author__ = 'Alican Lakot'
 __url__ = 'http://www.furk.net/?INVITE=1216084'
-__version__ = '1.0.3'
+__version__ = '1.0.4'
 __settings__ = xbmcaddon.Addon(id='plugin.video.furklibrary')
 ADDON = xbmcaddon.Addon(id='plugin.video.furklibrary')
 
@@ -139,9 +139,10 @@ elif(params['action'] == 'search'):
 
 elif(params['action'] == 'scrapeDir'):
         did = params['did']
+        dirname =  params['dirname']
         collector.Notification("Scraping" , " files")
         files = getter.getFiles(did)
-	scraped = collector.addFiles(did,files)
+	scraped = collector.addFiles(did,dirname,files)
 	collector.Notification("Scraped",str(scraped) + " files")
         xbmc.executebuiltin('UpdateLibrary(video)')
         

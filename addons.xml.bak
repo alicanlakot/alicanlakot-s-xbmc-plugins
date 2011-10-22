@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="plugin.video.furklibrary" version="1.0.2" name="Furk.net BitTorrent Proxy Lib" provider-name="alicanlakot">
+<addon id="plugin.video.furklibrary" version="1.0.3" name="Furk.net BitTorrent Proxy Lib" provider-name="alicanlakot">
 	<requires/>
 	<extension point="xbmc.python.pluginsource"
 	           library="default.py">

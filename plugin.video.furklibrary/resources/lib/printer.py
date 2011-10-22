@@ -89,8 +89,8 @@ def printDirs(dirs):
                 listitem.setThumbnailImage(thumb)
                 listitem.setInfo('video', {'date': date, 'title': name})
                 commands = []
-                cm = [ ( "Scrape dir", "XBMC.RunPlugin(%s?action=scrapeDir&did=%s)" % ( sys.argv[ 0 ], id), ) ]
-                listitem.addContextMenuItems( cm, replaceItems=True )
+                cm = [ ( "Scrape dir", "XBMC.RunPlugin(%s?action=scrapeDir&did=%s&dirname=%s)" % ( sys.argv[ 0 ], id , name), ) ]
+                listitem.addContextMenuItems( cm, replaceItems=False )
                 xbmcplugin.addDirectoryItem(int(sys.argv[1]), url, listitem, isFolder=True, totalItems=total)
 
         xbmcplugin.endOfDirectory(int(sys.argv[1]))
