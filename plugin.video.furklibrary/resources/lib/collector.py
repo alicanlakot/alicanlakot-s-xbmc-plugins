@@ -59,7 +59,7 @@ def AddonMenu():  #homescreen
 	#AddOption('Delete History and Dirs',False, 'DeleteHistory')
 	#AddOption('About',False, 'about')
 	AddOption('This plugin is no more supported',False, 'about')
-	AddOption('Please add Furk Library 2 from Alicanlakot's Repository',False, 'about')
+	AddOption('Please add Furk Library 2 from Alicanlakots Repository',False, 'about')
 	xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 def addFiles(did,dirname,files):
