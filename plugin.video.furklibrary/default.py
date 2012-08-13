@@ -24,7 +24,7 @@ import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 __plugin__ = 'Furk.net Library'
 __author__ = 'Alican Lakot'
 __url__ = 'http://www.furk.net/?INVITE=1216084'
-__version__ = '1.0.4'
+__version__ = '1.0.5'
 __settings__ = xbmcaddon.Addon(id='plugin.video.furklibrary')
 ADDON = xbmcaddon.Addon(id='plugin.video.furklibrary')
 
@@ -63,7 +63,7 @@ def AutoUpdateLibrary():
                 dirs = getter.getDirs()
                 pxDialog.close()
 		if dirs:
-                        collector.collect(dirs)
+                        collector.collect2(dirs)
                         xbmc.executebuiltin('UpdateLibrary(video)')
 		
 	#reset the timer

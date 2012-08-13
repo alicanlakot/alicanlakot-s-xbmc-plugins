@@ -53,11 +53,13 @@ def AddOption(text, isFolder, mode, name=''):
 
 def AddonMenu():  #homescreen
 	print 'FurkLibrary menu'
-	AddOption('Run',False, 'AU')
-	AddOption('MovieLens',True, 'movielens')
-	AddOption('Search',True,'recent_queries&query=')
-	AddOption('Delete History and Dirs',False, 'DeleteHistory')
-	AddOption('About',False, 'about')
+	#AddOption('Run',False, 'AU')
+	#AddOption('MovieLens',True, 'movielens')
+	#AddOption('Search',True,'recent_queries&query=')
+	#AddOption('Delete History and Dirs',False, 'DeleteHistory')
+	#AddOption('About',False, 'about')
+	AddOption('This plugin is no more supported',False, 'about')
+	AddOption('Please add Furk Library 2 from Alicanlakot's Repository',False, 'about')
 	xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 def addFiles(did,dirname,files):
@@ -77,6 +79,29 @@ def addFiles(did,dirname,files):
                         CreateStreamFile(strmfilename,url,mypath,False)
                         scraped = scraped+1
         return scraped
+
+def addFiles2(did,targetdir,files):
+	if not files:
+                return
+	total = len(files)
+	scraped = 0
+	for f in files:
+                id = f.getElementsByTagName('id').item(0).firstChild.data
+                name = f.getElementsByTagName('name').item(0).firstChild.data
+                p = re.compile('[-._ \\/]sample[-._ \\/]', re.I)
+                m = p.search(name)
+                if m:
+                        continue
+                else:
+                        pass
+                play_url = f.getElementsByTagName('url').item(0).firstChild.data
+                strmfilename = CleanFileName(name,False)
+                url = sys.argv[0] + '?action=playMe&did=' + did + '&fid=' + id + '&name="' + strmfilename + '"'
+                CreateStreamFile(strmfilename,url,targetdir,False)
+                scraped = scraped+1
+        return scraped
+
+
                 
 def playMe(did,fid):
         return playMe(did,fid,'')
@@ -219,6 +244,65 @@ def nameCheck(name,dirname):
                                                 CreateDirectory(myotherspath)
                                                 return myName,myotherspath
                         return None,None
+
+
+def nameCheck2(name):
+                print 'oldname=' + name.encode("utf8")
+                name = name.replace('[ www.Speed.Cd ] - ','')
+                name = name.replace('[ UsaBit.com ] - ','')
+                print 'newname=' + name.encode("utf8")
+         # Check here from the name if this is a series or not
+                myParser= guess_series(name)
+                
+                #xbmcgui.Dialog().ok('ok')
+                if myParser:
+                        print 'Show'
+                        myParser.parse()
+                        show_name= myParser.name
+                        episode= str(myParser.episode).zfill(2)
+                        season = str(myParser.season).zfill(2)
+                        show_path = os.path.join(TV_SHOWS_PATH, CleanFileName(show_name, False))
+                        CreateDirectory(show_path)		
+                        season_path = os.path.join(show_path, season)
+                        CreateDirectory(season_path)
+                        show_full = show_name + ' S' + season + 'E' + str(episode)
+                        return season_path
+                        
+
+                else:
+                        parser = MovieParser()
+                        parser.data = name
+                        parser.parse()
+                        myName = parser.name 
+                        myYear = parser.year
+                        myotherspath = os.path.join(OTHERS_PATH, CleanFileName(name,False))
+                        print 'myName=' + myName.encode("utf-8")
+                        print 'Year=' + str(myYear)
+                        if myName:
+                                        print 'my name exists'
+                                        if myYear:
+                                                print 'myyear exists'
+                                                myquality = parser.quality
+                                                movie_name = myName + ' (' + str(myYear) + ')'
+                                                mydir= os.path.join(MOVIES_PATH , myquality ,movie_name)
+                                                print 'name =' + name.encode("utf-8")
+                                                print 'myquality=' + myquality
+                                                if myquality=="xyz":
+                                                        CreateDirectory(myotherspath)
+                                                        return myotherspath
+                                                else:
+                                                        print 'Movie Dir being created'
+                                                        CreateDirectory(mydir)
+                                                        return mydir
+                                                
+                                        else:
+                                                print name.encode("utf-8")
+                                                CreateDirectory(myotherspath)
+                                                return myotherspath
+                        return None
+
+
+
                 
 def CreateStreamFile(name, href, dir, remove_year):
 	try:
@@ -286,9 +370,11 @@ def Notification(title, message):
         print message.encode("utf-8")
         return
 
+
+
 def guess_series(title):
         """Returns a valid series parser if this :title: appears to be a series"""
-
+        print 'title=' + title
         parser = SeriesParser(identified_by='ep', allow_seasonless=False)
         # We need to replace certain characters with spaces to make sure episode parsing works right
         # We don't remove anything, as the match positions should line up with the original title
@@ -369,6 +455,51 @@ def collect(dirs):
 		#Notification("Done","Done")
 		#xbmc.UpdateLibrary(video)
 		return
+
+def collect2(dirs):
+                myHistory = getHistory()
+                hist = set(myHistory)
+                total = len(dirs)
+		i = 0.0
+		pDialog = xbmcgui.DialogProgress()
+                ret = pDialog.create('XBMC', 'Initializing script...')
+                        
+		for d in dirs:
+                        i += 1
+                        percent = int( (i * 100) / total)
+                        pDialog.update(percent, 'Getting files',str(int(i))+'/'+str(total))
+                        #if i % 20 == 1:
+                                #Notification(str(total),str(i))
+			id = d.getElementsByTagName('id').item(0).firstChild.data
+			name = d.getElementsByTagName('name').item(0).firstChild.data
+			date = d.getElementsByTagName('date').item(0).firstChild.data
+			thumb = d.getElementsByTagName('thumb').item(0).firstChild.data
+			if (id + '\n') in hist:
+                                continue
+                        else:
+                                pass
+                                                    
+                        targetdir= nameCheck2(name)
+
+                        if targetdir:
+                                files = getter.getFiles(id)
+                                addFiles2(id,targetdir,files)
+                        else:
+                                pass
+                        myHistory.append(id + '\n')
+##                        except:
+##                                pass
+                        if (pDialog.iscanceled()):
+                                print 'Canceled scraping'
+                                pDialog.close()
+                                return
+                putHistory(myHistory)
+		#Notification("Done","Done")
+		#xbmc.UpdateLibrary(video)
+		return
+
+
+
 
 def getHistory():
         try:
