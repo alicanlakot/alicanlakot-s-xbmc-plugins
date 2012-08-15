@@ -11,7 +11,7 @@
 			Scrapes video torrents from 'My Files :: Finished' into your library. Check www.furk.net/text/mc for more info.
 	   	</summary>
 		<description>
-This is not longer supported, please download Furk Library 2 from alicanlakot's library.
+This is not longer supported, please download Furk Library 2 from alicanlakot's repository.
 		</description>
 		<platform>all</platform>
 		<minversion>29000</minversion>
