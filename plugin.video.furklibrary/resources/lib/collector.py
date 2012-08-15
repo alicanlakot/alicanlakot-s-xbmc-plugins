@@ -63,7 +63,7 @@ def AddonMenu():  #homescreen
 	text = 'Click here to try automatically'
 	li = xbmcgui.ListItem(text)
 	url = 'plugin://plugin.video.furklibrary2/'+'?action=none' 
-	xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=li, isFolder=False)
+	xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=li, isFolder=True)
 	xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 def addFiles(did,dirname,files):
