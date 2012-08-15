@@ -60,6 +60,10 @@ def AddonMenu():  #homescreen
 	#AddOption('About',False, 'about')
 	AddOption('This plugin is no more supported',False, 'about')
 	AddOption('Please add Furk Library 2 from Alicanlakots Repository',False, 'about')
+	text = 'Click here to try automatically'
+	li = xbmcgui.ListItem(text)
+	url = 'plugin://plugin.video.furklibrary2/'+'?action=none' 
+	xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=li, isFolder=False)
 	xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 def addFiles(did,dirname,files):
