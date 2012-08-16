@@ -141,9 +141,10 @@ def SearchDialog(type,title,year,season,number):
 					#Notification(mycheck.lower(),query.lower())
 					if valid:
 						#Notification('Quality:',str(myquality))
-						quality_options.append(movie_name)
+						quality_options.append(str(myquality) + ' ' + dirname)
 						quality_ids.append(file['info_hash'])
 						quality_cleanname.append(dirname)
+						quality_urls.append(None)
 						if not str(myquality) in unique_qualities:
 							unique_qualities.append(str(myquality))
 				else:
@@ -167,8 +168,8 @@ def SearchDialog(type,title,year,season,number):
 					myYear = 0
 					valid = False
 				title = unicodedata.normalize('NFKD',unicode(title,'utf-8')).encode('ASCII', 'ignore')
-				print 'T:' + title.lower()
-				print 'M:' + myName.lower() 
+				#print 'T:' + title.lower()
+				#print 'M:' + myName.lower() 
 				if title.lower() in myName.lower() and myquality.value>250:
 					valid = True
 
@@ -186,7 +187,7 @@ def SearchDialog(type,title,year,season,number):
 
 			
 
-	if len(unique_qualities)<=1 and type=='Show':
+	if len(unique_qualities)<=2 and type=='Show':
 		
 
 		season_episode = "s%.2de%.2d" % (int(season), int(number))
@@ -305,7 +306,10 @@ def SearchDialog(type,title,year,season,number):
 			
 			try:
 				myurl = quality_urls[quality_select]
-				myname = quality_cleanname[quality_select]
+				if myurl:
+					myname = quality_cleanname[quality_select]
+				else:
+					raise Exception("empty url")
 			except: 
 				myid = quality_ids[quality_select]
 				files = furklib.fileInfo(myid)
@@ -426,16 +430,16 @@ def filebyfile(id,dirname,title,year,season,number):
 				movie_name = '''{0} {1} S{2:0>2}E{3:0>2}'''.format(myquality,myName, mySeason, myNumber)
 				movie_name2 = '''B:{0} {1} S{2}E{3}'''.format('unk',title, season, number)
 				clean_name = '''{1} S{2:0>2}E{3:0>2}'''.format(myquality,myName, mySeason, myNumber)
-				print 'U: {0} S{1}E{2}'.format(myNametoCheck,mySeason,myNumber)
-				print 'Y: {0} S{1}E{2}'.format(titletoCheck,season,number)
+				#print 'U: {0} S{1}E{2}'.format(myNametoCheck,mySeason,myNumber)
+				#print 'Y: {0} S{1}E{2}'.format(titletoCheck,season,number)
 				if not myNametoCheck.startswith(titletoCheck):
-					print 'break namecheck'
+					#print 'break namecheck'
 					break
 				if int(mySeason)==int(season) and int(myNumber)==int(number):
 					valid= True
 	
 			if valid:
-				quality_options.append(movie_name)
+				quality_options.append(str(myquality) + ' ' + name)
 				quality_cleanname.append(clean_name)
 				quality_urls.append(play_url)
 				if not str(myquality) in unique_qualities:
