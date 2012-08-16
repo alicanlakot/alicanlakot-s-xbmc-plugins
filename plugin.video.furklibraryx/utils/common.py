@@ -6,7 +6,7 @@ import SimpleDownloader as downloader
 
 downloader = downloader.SimpleDownloader()
 CACHE_PATH= os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.furklibraryx/traktcache'), '')
-ADDON = xbmcaddon.Addon(id='plugin.video.furklibrary2')
+
 
 def RemoveDirectory(dir):
 	dialog = xbmcgui.Dialog()
