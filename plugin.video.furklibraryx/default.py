@@ -42,12 +42,12 @@ print "[PLUGIN] '%s: version %s' initialized!" % (__plugin__, __version__)
 if settings.getSetting('tv_show_custom_directory') == "true":
 	TV_SHOWS_PATH = settings.getSetting('tv_show_directory')
 else:
-	TV_SHOWS_PATH = os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.furklibrary2/tvshows'), '')
+	TV_SHOWS_PATH = os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.furklibraryx/tvshows'), '')
 
 if settings.getSetting('movie_custom_directory') == "true":
 	TV_SHOWS_PATH = settings.getSetting('movie_directory')
 else:
-	MOVIES_PATH = os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.furklibrary2/movies'), '')
+	MOVIES_PATH = os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.furklibraryx/movies'), '')
 
 
 def parse_qs(u):
