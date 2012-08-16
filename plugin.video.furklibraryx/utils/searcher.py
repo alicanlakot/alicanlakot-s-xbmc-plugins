@@ -186,7 +186,7 @@ def SearchDialog(type,title,year,season,number):
 
 			
 
-	if len(quality_options)<=1 and type=='Show':
+	if len(unique_qualities)<=1 and type=='Show':
 		
 
 		season_episode = "s%.2de%.2d" % (int(season), int(number))
