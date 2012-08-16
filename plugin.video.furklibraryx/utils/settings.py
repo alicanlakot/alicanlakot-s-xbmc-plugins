@@ -1,6 +1,6 @@
 import xbmcaddon,xbmc
 
-ADDON = xbmcaddon.Addon(id='plugin.video.furklibrary2')
+ADDON = xbmcaddon.Addon(id='plugin.video.furklibraryx')
 
 def getSetting(myKey):
 	return ADDON.getSetting(myKey)
