@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<strings>
+	<string id="20001">Login</string>
+	<string id="20002">Password</string>
+	<string id="20003">API Key</string>
+    <!-- Megaupload -->
+    <string id="30200">Use Megaupload account</string>
+    <string id="30201">    Username</string>
+    <string id="30202">    Password</string>
+    <string id="30203">    Hide successful login notifications</string>
+    <string id="30300">Use custom directory</string>
+    <string id="30301">    Movie directory</string>	
+    <string id="30302">Use filters</string>
+    <string id="30303">    Released later than</string>
+    <string id="30304">    HD-only</string>
+	<string id="30400">Use custom directory</string>
+    <string id="30401">    TV show directory</string>	
+    <string id="30402">Use filters</string>
+    <string id="30403">    Released later than</string>
+	<string id="30500">Best quality (Not implemented)</string>
+    <string id="30501">Auto play mirrors</string>
+	<string id="30600">Use automatic updates</string>
+    <string id="30601">    Update timer</string>
+    <string id="30602">    Get new episodes from favorite TV shows</string>
+    <string id="30603">    Get new movies</string>
+</strings>
+

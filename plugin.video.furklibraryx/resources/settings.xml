@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<settings>
+	<category label="Furk.net Account">
+		<setting id="furk_login" type="text" label="20001" default=""/>
+		<setting id="furk_password" type="text" label="20002" default="" option="hidden"/>
+		<setting id="furk_apikey" type="text" label="20003" default="" visible="false"/>
+	</category>
+	<category label="Trakt Account">
+		<setting id="trakt_login" type="text" label="20001" default=""/>
+		<setting id="trakt_password" type="text" label="20002" default="" option="hidden"/>
+	</category>
+	<category label="Movies">
+		<setting id="movie_custom_directory" type="bool" label="30300" default="false"/>
+		<setting id="movie_directory" type="folder" label="30301" default="" enable="!eq(-1,false)"/>
+	</category>
+	<category label="TV shows">
+		<setting id="tv_show_custom_directory" type="bool" label="30400" default="false"/>
+		<setting id="tv_show_directory" type="folder" label="30401" default="" enable="!eq(-1,false)"/>
+	</category>
+	<category label="Quality">
+		<setting id="max_quality" type="bool" label="30500" default="false"/>
+	</category>
+	<category label="Auto-update">
+		<setting id="auto_update" type="bool" label="30600" default="false"/>
+	    <setting id="update_timer" type="enum" values="1h|2h|5h|10h|15h|24h" label="30601" default="1" enable="!eq(-1,false)"/>
+	</category>
+	<category label="Criticker">
+		<setting id="criticker_apikey" type="text" label="20003" default=""/>
+	</category>
+	<setting id="first_time_startup" type="bool" label="20003" default="true" visible="false"/>
+
+
+</settings>
+
