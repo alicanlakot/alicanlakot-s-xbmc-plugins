@@ -37,7 +37,7 @@ def createMovieStrm(movietitle,movieyear,mypath,imdbid):
 	if not os.path.isfile(filename):
 		with open(filename, 'w') as f:
 			f.write(
-			'''plugin://plugin.video.furklibrary2/default.py?action=SearchMe&type=Movie&title={0}&year={1}&imdbid={2}'''.format(CleanFileName(movietitle), movieyear,imdbid))
+			'''plugin://plugin.video.furklibraryx/default.py?action=SearchMe&type=Movie&title={0}&year={1}&imdbid={2}'''.format(CleanFileName(movietitle), movieyear,imdbid))
 		ret = 1
 		Notification('Scraped:',movietitle)
 	return ret 
@@ -54,7 +54,7 @@ def createShowStrm(show_name,season,number,TV_SHOWS_PATH,tvdbid):
     if not os.path.isfile(filename):
 	    with open(filename, 'w') as f:
 		f.write(
-	'''plugin://plugin.video.furklibrary2/default.py?action=SearchMe&type=Show&title={0}&season={1}&episode={2}&tvdbid={3}'''.format(show_name,season,number,tvdbid))
+	'''plugin://plugin.video.furklibraryx/default.py?action=SearchMe&type=Show&title={0}&season={1}&episode={2}&tvdbid={3}'''.format(show_name,season,number,tvdbid))
 	    ret = 1
 	    Notification('Scraped:',showfull)
     return ret
