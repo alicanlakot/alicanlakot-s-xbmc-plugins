@@ -67,6 +67,7 @@ def AddonMenu():  #homescreen
 	common.createListItem('IMDB',True, url + 'imdb_Menu&page=1')
 	common.createListItem('Torrentfreak Top 10',True, url + 'torrentfreak')
 	common.createListItem('Criticker (Beta)',True, url + 'criticker')
+	common.createListItem('Setup',False,url +'setup')
 	xbmcplugin.endOfDirectory(int(sys.argv[1]))
 
 
@@ -282,6 +283,10 @@ elif(params['action'] == 'download'):
 	filename = params['filename']
 	common.download(url,filename)
 
+elif(params['action'] == 'setup'):
+	settings.setSetting('first_time_startup','true')
+	FIRST_TIME_STARTUP = settings.first_time_startup()
+	setup()
         
 else:
         # torrents a root Directories 
