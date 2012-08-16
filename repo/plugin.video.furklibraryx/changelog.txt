@@ -1,0 +1,9 @@
+[B]1.0.3[/B]
+- Changed handling files that are not available anymore. It'll search for them, and add it to the recent search list, so you can easily play them through the plugin.
+
+[B]1.0.2[/B]
+- Initial beta version
+
+
+[B]1.0.0[/B]
+- Initial version
