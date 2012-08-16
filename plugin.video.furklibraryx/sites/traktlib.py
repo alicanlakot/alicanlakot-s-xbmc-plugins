@@ -22,7 +22,6 @@ def testUser(username,pwd):
 # get a connection to trakt
 def getTraktConnection():
     conn = httplib.HTTPConnection('api.trakt.tv')
-    #conn= httplib.HTTPConnection('proxyinternet.frlev.danet')
     return conn
     
 # make a JSON api request to trakt
@@ -39,9 +38,7 @@ def getTraktConnection():
 def traktJsonRequest(method, req, args={}, returnStatus=False, anon=False, conn=False, silent=False, passVersions=False):
     closeConnection = False
     conn = getTraktConnection()
-    print ("conn1")
     closeConnection = True
-    print ("conn2")
     req = 'http://api.trakt.tv' + req
     req = req.replace("%%API_KEY%%",apikey)
     req = req.replace("%%USERNAME%%",settings.getSetting('trakt_login'))
@@ -55,15 +52,15 @@ def traktJsonRequest(method, req, args={}, returnStatus=False, anon=False, conn=
                 args['media_center_version'] = xbmc.getInfoLabel("system.buildversion")
                 args['media_center_date'] = xbmc.getInfoLabel("system.builddate")
             jdata = json.dumps(args)
-            print(req)
-            print(jdata)
+            #print(req)
+            #print(jdata)
             conn.request('POST', req, jdata)
     elif method == 'GET':
             args['username'] = settings.getSetting('trakt_login')
             args['password'] = settings.getSetting('trakt_password')
             jdata = json.dumps(args)
             conn.request('GET', req, jdata)
-            print("trakt json url: "+req)
+            #print("trakt json url: "+req)
     #conn.go()
     try:
 	response = conn.getresponse()
@@ -93,7 +90,7 @@ def getRecommendedMoviesFromTrakt(genre = None):
     args = {}
     if genre:
 	    args['genre'] = genre
-	    print 'genre:' + genre
+	    #print 'genre:' + genre
 
     data = traktJsonRequest('POST', '/recommendations/movies/%%API_KEY%%',args)
     if data == None:
