@@ -315,7 +315,7 @@ def displayTraktMenu():
 	common.createListItem('Trending Movies', True, url +'trakt_TrendingMovies')
 	common.createListItem('Search Movies', True, url +'trakt_SearchMovies')
 	common.createListItem('--------------------------------------------', False, '')
-	common.createListItem('Progress', True, url+'trakt_Progress')
+	common.createListItem('Tv Show Progress', True, url+'trakt_Progress')
 	common.createListItem('Recommended Shows', True, url +'trakt_RecommendedShows')
 	common.createListItem('Trending Shows', True, url +'trakt_TrendingShows')
 	common.createListItem('Search Shows', True, url +'trakt_SearchShows')
