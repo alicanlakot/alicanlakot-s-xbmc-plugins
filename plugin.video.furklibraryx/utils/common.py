@@ -2,9 +2,9 @@ import os,sys,urlparse,re,time
 import xbmcgui,xbmc,xbmcplugin,xbmcaddon
 from sites import traktlib
 import json
-import SimpleDownloader as downloader
+#import SimpleDownloader as downloader
 
-downloader = downloader.SimpleDownloader()
+# downloader = downloader.SimpleDownloader()
 CACHE_PATH= os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.furklibraryx/traktcache'), '')
 
 
@@ -334,7 +334,7 @@ def createMovieListItem(text, movietitle, movieyear, totalItems = 10 , imdbid=No
 
 def createListItem(text, isFolder, url, name='',totalItems = 10):
 	li = xbmcgui.ListItem(text)
-        cm = [( "Download", "XBMC.RunPlugin(%s?action=download&url=%s&filename=%s)" % ( sys.argv[ 0 ], url, text), ) , ]
+        cm = [( "Download - disabled", "XBMC.RunPlugin(%s?action=download&url=%s&filename=%s)" % ( sys.argv[ 0 ], url, text), ) , ]
         li.addContextMenuItems( cm, replaceItems=False )
 	return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=li, isFolder=isFolder,totalItems = totalItems)
 
@@ -601,6 +601,6 @@ def addMovieInfotoPlayListitem(li,movie):
 	return
 
 def download(url,filename):
-	params = { "url": url, "download_path": "C:/Movies" }
-	downloader.download(filename, params)
+	#params = { "url": url, "download_path": "C:/Movies" }
+	#downloader.download(filename, params)
 	return
