@@ -83,7 +83,7 @@ def getImdbAwards(type,year):
 	common.endofDir()
         return 
 
-def addImdbToLib(VCDQ_PATH,fg):
+def addImdbToLib(fg):
 	if fg == 'True':
 		common.Notification('Getting:','IMDB Top Rentals')
 	totalAdded = 0
@@ -93,9 +93,9 @@ def addImdbToLib(VCDQ_PATH,fg):
 	entries = re.findall(r'<td align=left><b><a href="/title/tt(\d{7})/">([^<]+)</a> \((\d{4})\)</b></td>',html)
 	for entry in entries:
 		link_number,title,year = entry
-		created = common.createMovieStrm(title,year,VCDQ_PATH,'tt'+link_number)
+		created = common.createMovieStrm(title,year,'tt'+link_number)
 		totalAdded = totalAdded + created
-	        common.createMovieNfo(title,year,'tt'+link_number,VCDQ_PATH)
+	        common.createMovieNfo(title,year,'tt'+link_number)
         return totalAdded
 
 def imdbAction(params):

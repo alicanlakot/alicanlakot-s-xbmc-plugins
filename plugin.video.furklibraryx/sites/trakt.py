@@ -2,9 +2,10 @@ from utils import common
 from sites import traktlib
 import datetime,sys,time
 import xbmcgui,xbmc
+import sys
 from utils import settings
 
-def addToXbmcLib(VCDQ_PATH,TV_SHOWS_PATH,fg = None):
+def addToXbmcLib(fg = None):
 	totalAdded=0
 	if fg == 'True':
 		common.Notification('Getting:','Trending')	
@@ -12,22 +13,22 @@ def addToXbmcLib(VCDQ_PATH,TV_SHOWS_PATH,fg = None):
 	if movies:
 		for movie in movies:
 			if not movie['watched'] and movie['watchers']>1:
-				totalAdded = totalAdded + common.createMovieStrm(movie['title'],movie['year'],VCDQ_PATH,movie['imdb_id'])
-			        common.createMovieNfo(movie['title'],movie['year'],movie['imdb_id'],VCDQ_PATH)
+				totalAdded = totalAdded + common.createMovieStrm(movie['title'],movie['year'],movie['imdb_id'])
+			        common.createMovieNfo(movie['title'],movie['year'],movie['imdb_id'])
 
 	if fg == 'True':
 		common.Notification('Getting:','Recommended')	
 	movies = traktlib.getRecommendedMoviesFromTrakt()
 	if movies:
 	    for movie in movies:
-		totalAdded = totalAdded + common.createMovieStrm(movie['title'],movie['year'],VCDQ_PATH,movie['imdb_id'])
-	        common.createMovieNfo(movie['title'],movie['year'],movie['imdb_id'],VCDQ_PATH)
+		totalAdded = totalAdded + common.createMovieStrm(movie['title'],movie['year'],movie['imdb_id'])
+	        common.createMovieNfo(movie['title'],movie['year'],movie['imdb_id'])
 	if fg == 'True':
 		common.Notification('Getting:','Watchlist Movies')	
 	movies = traktlib.getWatchlistMoviesFromTrakt()
 	for movie in movies:
-		totalAdded = totalAdded + common.createMovieStrm(movie['title'],movie['year'],VCDQ_PATH,movie['imdb_id'])
-	        common.createMovieNfo(movie['title'],movie['year'],movie['imdb_id'],VCDQ_PATH)
+		totalAdded = totalAdded + common.createMovieStrm(movie['title'],movie['year'],movie['imdb_id'])
+	        common.createMovieNfo(movie['title'],movie['year'],movie['imdb_id'])
 
 
 	if fg == 'True':
@@ -41,7 +42,7 @@ def addToXbmcLib(VCDQ_PATH,TV_SHOWS_PATH,fg = None):
 	    for episode in episodes:
 		myepisode = episode['episode']
 	        myshow = episode['show']
-		totalAdded = totalAdded + common.createShowStrm(myshow['title'],myepisode['season'],myepisode['number'],TV_SHOWS_PATH,myshow['tvdb_id'])
+		totalAdded = totalAdded + common.createShowStrm(myshow['title'],myepisode['season'],myepisode['number'],myshow['tvdb_id'])
 	
 #	premieres= getPremieresCalendarFromTrakt(currentdate)
 #	for show in premieres:
@@ -51,18 +52,18 @@ def addToXbmcLib(VCDQ_PATH,TV_SHOWS_PATH,fg = None):
 #	        myshow = episode['show']
 #		season = myepisode['season']
 #		if season==1:
-#			totalAdded = totalAdded + common.createShowStrm(myshow,myepisode,TV_SHOWS_PATH,myshow['tvdb_id'])
+#			totalAdded = totalAdded + common.createShowStrm(myshow,myepisode,myshow['tvdb_id'])
 
 	if fg == 'True':		
 		common.Notification('Getting:','Watchlist Shows')	
-	totalAdded = totalAdded + getWatchlistShows(TV_SHOWS_PATH)
+	totalAdded = totalAdded + getWatchlistShows()
 	if fg == 'True':
 		common.Notification('Total:', str(totalAdded))
 	return totalAdded
 
 
 
-def getWatchlistShows(TV_SHOWS_PATH):
+def getWatchlistShows():
 	tot = 0
 	shows = traktlib.getWatchlistShowsfromTrakt()
 #	for myshow in shows:
@@ -77,11 +78,11 @@ def getWatchlistShows(TV_SHOWS_PATH):
 #			for myepisode in episodes:
 #				if not False: #myepisode['watched']:
 #				#print episode['title']
-#					tot = tot + common.createShowStrm(myshow['title'],myepisode['season'],myepisode['number'],TV_SHOWS_PATH,myshow['tvdb_id'])
+#					tot = tot + common.createShowStrm(myshow['title'],myepisode['season'],myepisode['number'],myshow['tvdb_id'])
 #	return tot
 
 	for myshow in shows:
-		if common.checkEnded(TV_SHOWS_PATH,myshow['title']) == False:
+		if common.checkEnded(myshow['title']) == False:
 			fullshow = traktlib.getFullShow(myshow['tvdb_id'])
 			seasons = fullshow['seasons']
 			common.Notification('Getting:', myshow['title'])
@@ -90,8 +91,8 @@ def getWatchlistShows(TV_SHOWS_PATH):
 				    continue
 				episodes = season['episodes']
 				for myepisode in episodes:
-					tot = tot + common.createShowStrm(myshow['title'],myepisode['season'],myepisode['number'],TV_SHOWS_PATH,myshow['tvdb_id'])
-			common.putShowStatus(TV_SHOWS_PATH,fullshow['title'],fullshow['status'])
+					tot = tot + common.createShowStrm(myshow['title'],myepisode['season'],myepisode['number'],myshow['tvdb_id'])
+			common.putShowStatus(fullshow['title'],fullshow['status'])
 	return tot
 
 
@@ -137,6 +138,35 @@ def displayProgress():
 	common.endofDir()
 
 
+def calculateProgress():
+	progress = traktlib.getProgress()
+	shows = {}
+	
+
+	progressByShow = {}
+	for current in progress:
+		lastseason = 100
+		lastepisode = 100
+		for season in current['seasons']:
+			seasonnumber = int(season['season'])
+			for episode in season ['episodes']:
+				if not season ['episodes'][episode]:
+					myseason,myepisode = seasonnumber,int(episode)
+					if myseason<lastseason:
+						lastseason = myseason
+						lastepisode = 100
+					if myseason==lastseason and myepisode<lastepisode:
+						lastepisode = myepisode
+					#print '{0} S{1} E{2} / S{3} E{4}'.format(current['show']['title'],myseason,myepisode,lastseason,lastepisode)
+
+		#print '{0} S{1} E{2}'.format(current['show']['title'],lastseason,lastepisode)
+		#break
+		show = {}
+		if lastseason<>100:
+			shows[current['show']['title']]= (lastseason,lastepisode)
+	return shows
+
+
 def displayRecommendedMovies(genre):
 	movies = traktlib.getRecommendedMoviesFromTrakt(genre)
 	for movie in movies:
@@ -158,7 +188,7 @@ def traktSeenRate(imdbid):
 	if myrating==-1: return
 	movie['rating'] = ratings[myrating]
 	response = traktlib.setRating(movie,'movie')
-	common.Notification(response['status'],response['message'])
+	common.traktResponse(response)
 	args = {}
 	movie = {}
 	args['movies'] = []
@@ -183,11 +213,11 @@ def traktSeenShow(tvdbid,season,episode):
 		if myrating==-1: return
 		show['rating'] = ratings[myrating]
 		response = traktlib.setRating(show,'show')
-		common.Notification(response['status'],response['message'])
+		common.traktResponse(response)
 	
 	response = traktlib.setShowSeen(tvdbid,season,episode)
-	common.Notification(response['status'],response['message'])
-	common.Notification(response['status'],response['message'])
+	common.traktResponse(response)
+
 
 	return
 
@@ -197,11 +227,23 @@ def traktDismissMovie(imdbid):
 
 def addShowtoWatchlist(tvdbid):
 	response = traktlib.addShowtoWatchList(tvdbid)
-	common.Notification(response['status'],'Done')
+	common.traktResponse(response)
+	getWatchlistShows()
+	xbmc.executebuiltin('UpdateLibrary(video)')
 
 def traktDismissShow(tvdbid):
 	response = traktlib.dismissShow(tvdbid)
 	common.Notification(response['status'],response['message'])
+
+def addMovietoWatchlist(imdbid):
+	response = traktlib.addMovietoWatchlist(imdbid)
+	common.traktResponse(response)
+	movies = traktlib.getWatchlistMoviesFromTrakt()
+	for movie in movies:
+		common.createMovieStrm(movie['title'],movie['year'],movie['imdb_id'])
+	        common.createMovieNfo(movie['title'],movie['year'],movie['imdb_id'])
+	xbmc.executebuiltin('UpdateLibrary(video)')
+
 
 
 def traktAction(params):
@@ -276,6 +318,11 @@ def traktAction(params):
 	elif(params['action'] == 'trakt_AddShowtoWatchlist'):
 		tvdbid = params['tvdbid']
 		addShowtoWatchlist(tvdbid)
+	
+	elif(params['action'] == 'trakt_AddMovietoWatchlist'):
+		imdbid = params['imdbid']
+		addMovietoWatchlist(imdbid)
+
 
 	elif(params['action'] == 'trakt_DismissShow'):
 		tvdbid = params['tvdbid']
@@ -298,9 +345,13 @@ def traktAction(params):
 		common.endofDir()
 
 	elif(params['action'] == 'trakt_TrendingShows'):
-		movies = traktlib.getTrendingShowsFromTrakt()
-		for movie in movies:
-			common.createShowListItemTrakt(movie,totalItems = len(movies))
+		shows = traktlib.getTrendingShowsFromTrakt()
+		progressShows = calculateProgress()
+		for show in shows:
+			if show['title'] in progressShows:
+				common.createShowListItemTrakt(show,len(shows),progressShows[show['title']][0],progressShows[show['title']][1])
+			else:
+				common.createShowListItemTrakt(show,totalItems = len(shows))
 		common.endofDir()
 	
 	elif(params['action'] == 'trakt_Progress'):

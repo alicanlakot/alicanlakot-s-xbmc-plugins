@@ -19,15 +19,6 @@
 import sys, urllib, time, re, os
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin
 from utils import settings
-from utils import searcher
-from utils import common
-from sites import trakt,traktlib
-from sites import movielens
-from sites import criticker
-from sites import vcdq
-from sites import imdb
-from sites import torrentfreak
-from sites import furklib
 
 # Plugin constants
 __plugin__ = 'Furk.net Library X'
@@ -45,10 +36,25 @@ else:
 	TV_SHOWS_PATH = os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.furklibraryx/tvshows'), '')
 
 if settings.getSetting('movie_custom_directory') == "true":
-	TV_SHOWS_PATH = settings.getSetting('movie_directory')
+	MOVIES_PATH = settings.getSetting('movie_directory')
 else:
 	MOVIES_PATH = os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.furklibraryx/movies'), '')
 
+CACHE_PATH= os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.furklibraryx/traktcache'), '')
+
+
+from utils import searcher
+from utils import common
+from sites import trakt,traktlib
+from sites import movielens
+from sites import criticker
+from sites import vcdq
+from sites import imdb
+from sites import torrentfreak
+from sites import furklib
+
+
+print sys.modules[ "__main__" ]
 
 def parse_qs(u):
 	params = '?' in u and dict(p.split('=') for p in u[u.index('?') + 1:].split('&')) or {}
@@ -268,8 +274,8 @@ elif(params['action'] == 'traktlib'):
 		fg = params['fg']
 	except:
 		fg = 'True'
-	totalAdded = trakt.addToXbmcLib(MOVIES_PATH,TV_SHOWS_PATH,fg)
-	totalAdded += imdb.addImdbToLib(MOVIES_PATH,fg)
+	totalAdded = trakt.addToXbmcLib(fg)
+	totalAdded += imdb.addImdbToLib(fg)
 
 	if totalAdded>0:
 		common.Notification('Furk-Trakt', '{0} were added'.format(totalAdded))

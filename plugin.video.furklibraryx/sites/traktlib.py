@@ -130,6 +130,18 @@ def addShowtoWatchList(tvdbid):
 	    print("Error in request from 'getWatchlistMoviesFromTrakt()'")
     return data
 
+def addMovietoWatchlist(imdbid):
+    args = {}
+    movies = []
+    movie = {}
+    movie['imdb_id'] = imdbid
+    movies.append(movie)
+    args['movies'] = movies
+    data = traktJsonRequest('POST', '/movie/watchlist/%%API_KEY%%' ,args)
+    if data == None:
+	    print("Error in request from 'addMovietoWatchlist()'")
+    return data
+
 def dismissMovie(imdbid):
 	args = {}
 	args['imdb_id'] = imdbid

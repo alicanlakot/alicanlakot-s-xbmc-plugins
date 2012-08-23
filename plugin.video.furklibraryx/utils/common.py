@@ -5,7 +5,9 @@ import json
 #import SimpleDownloader as downloader
 
 # downloader = downloader.SimpleDownloader()
-CACHE_PATH= os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.furklibraryx/traktcache'), '')
+CACHE_PATH= sys.modules[ "__main__" ].CACHE_PATH
+MOVIES_PATH = sys.modules[ "__main__" ].MOVIES_PATH
+TV_SHOWS_PATH = sys.modules[ "__main__" ].TV_SHOWS_PATH
 
 
 def RemoveDirectory(dir):
@@ -28,12 +30,12 @@ def Notification(title, message):
         except: pass
         return
 
-def createMovieStrm(movietitle,movieyear,mypath,imdbid):
+def createMovieStrm(movietitle,movieyear,imdbid = 0):
 	ret = 0
-	CreateDirectory(mypath)		
+	CreateDirectory(MOVIES_PATH)		
 	filename = '/{0} ({1})'.format(movietitle.encode('ascii', 'ignore'),movieyear)
 	filename = CleanFileName(filename)
-	filename = os.path.join(mypath, filename+'.strm' )
+	filename = os.path.join(MOVIES_PATH, filename+'.strm' )
 	if not os.path.isfile(filename):
 		with open(filename, 'w') as f:
 			f.write(
@@ -42,7 +44,7 @@ def createMovieStrm(movietitle,movieyear,mypath,imdbid):
 		Notification('Scraped:',movietitle)
 	return ret 
 
-def createShowStrm(show_name,season,number,TV_SHOWS_PATH,tvdbid):
+def createShowStrm(show_name,season,number,tvdbid):
     ret = 0
     show_path = os.path.join(TV_SHOWS_PATH, CleanFileName(show_name))
     CreateDirectory(show_path)		
@@ -59,11 +61,11 @@ def createShowStrm(show_name,season,number,TV_SHOWS_PATH,tvdbid):
 	    Notification('Scraped:',showfull)
     return ret
 
-def createMovieNfo(movietitle,movieyear,imdbid,mypath):
+def createMovieNfo(movietitle,movieyear,imdbid):
 # write nfo file
 	filename = CleanFileName('/{0} ({1})'.format(movietitle.encode('ascii', 'ignore'),movieyear))
 	filename = filename + '.nfo'
-	filename = os.path.join(mypath, filename)
+	filename = os.path.join(MOVIES_PATH, filename)
 
 	if not os.path.isfile(filename):
 		with open(filename, 'w') as f:
@@ -188,13 +190,13 @@ def readMovie(filename,type='normal'):
 		return movie
 
 def checkWatched(movie):
-	print 'checking:' + movie['title']
+	#print 'checking:' + movie['title']
 	filename = os.path.join(CACHE_PATH, 'watched.txt' )
 	if not os.path.isfile(filename):
 		refreshWatched=True
 	else:
 		f = os.path.getmtime(filename)
-		if time.time() - f > 300:
+		if time.time() - f > 3000:
 			refreshWatched=True
 		else:
 			refreshWatched=False
@@ -211,7 +213,7 @@ def checkWatched(movie):
 
 	for watchedMovie in watchedMovies:
 		if movie['imdb_id'] == watchedMovie['imdb_id']:
-			print movie['title'] + ' is watched'
+			#print movie['title'] + ' is watched'
 			movie['watched'] = True
 			#writeMovietoCache(movie['imdb_id'].lstrip('t'),movie)
 			return movie
@@ -274,7 +276,7 @@ def createMovieListItemTrakt(movie, movietitle = None,movieyear = None, totalIte
 	li = xbmcgui.ListItem(s)
 
 	if imdbid:
-	        cm = [( "Dismiss movie", "XBMC.RunPlugin(%s?action=trakt_DismissMovie&imdbid=%s)" % ( sys.argv[ 0 ], imdbid), ) , ( "Mark as seen", "XBMC.RunPlugin(%s?action=trakt_SeenRate&imdbid=%s)" % ( sys.argv[ 0 ], imdbid), ) , ( "Add movie to library", "XBMC.RunPlugin(%s?action=scrapeMovie&title=%s&year=%s)" % ( sys.argv[ 0 ], movietitle , movieyear), ) ]
+	        cm = [( "Dismiss movie", "XBMC.RunPlugin(%s?action=trakt_DismissMovie&imdbid=%s)" % ( sys.argv[ 0 ], imdbid), ) , ( "Mark as seen", "XBMC.RunPlugin(%s?action=trakt_SeenRate&imdbid=%s)" % ( sys.argv[ 0 ], imdbid), ) , ( "Add movie to watchlist", "XBMC.RunPlugin(%s?action=trakt_AddMovietoWatchlist&imdbid=%s)" % ( sys.argv[ 0 ], imdbid), ) ]
 	else:
 		cm = [ ( "Add movie to library", "XBMC.RunPlugin(%s?action=scrapeMovie&title=%s&year=%s)" % ( sys.argv[ 0 ], movietitle , movieyear), ) ]
         li.addContextMenuItems( cm, replaceItems=False )
@@ -343,12 +345,12 @@ def endofDir():
 	xbmcplugin.endOfDirectory(int(sys.argv[1]))
 	return
 
-def checkEnded(TV_SHOWS_PATH,show_name):
+def checkEnded(show_name):
 	show_path = os.path.join(TV_SHOWS_PATH, CleanFileName(show_name))
 	show_path = os.path.join(show_path, 'Done.txt')
 	return os.path.isfile(show_path)
 
-def putShowStatus(TV_SHOWS_PATH,show_name,status):
+def putShowStatus(show_name,status):
 	show_path = os.path.join(TV_SHOWS_PATH, CleanFileName(show_name))
 	show_path = os.path.join(show_path, 'Done.txt')
 	open(show_path,'w')
@@ -373,12 +375,15 @@ def addMovieInfotoListitem(li,movie):
 	li.setInfo('video', { 'Rating': rating })
 	
 	mygenre = ''
-	for genre in movie['genres']:
-		mygenre = mygenre + genre + ' / '
+	try:
+		for genre in movie['genres']:
+			mygenre = mygenre + genre + ' / '
 	
-	if len(mygenre)>0:
-		mygenre = mygenre[:-2] 
-	li.setInfo('video', { 'Genre': mygenre})
+		if len(mygenre)>0:
+			mygenre = mygenre[:-2] 
+		li.setInfo('video', { 'Genre': mygenre})
+	except:
+		pass
 
 	try:
 		if not movie['trailer']=='':
@@ -604,3 +609,16 @@ def download(url,filename):
 	#params = { "url": url, "download_path": "C:/Movies" }
 	#downloader.download(filename, params)
 	return
+
+def traktResponse(response):
+	try:
+		Notification(response['status'],response['message'])
+	except:
+		try:
+			Notification(response['status'],response['error'])
+		except:
+			result = ''
+			for key, value in response.iteritems():
+				if str(value) <> '0':
+					result = result + key +':' + str(value) +' '
+			Notification(response['status'],result)
