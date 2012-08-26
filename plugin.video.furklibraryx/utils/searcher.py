@@ -6,6 +6,7 @@ from utils import common,settings
 from ext.titles.series import SeriesParser
 from ext.titles.movie import MovieParser
 from ext.titles.parser import TitleParser, ParseWarning
+from ext.hurry.filesize import size
 
 quality_options = []
 quality_urls = []
@@ -106,6 +107,7 @@ def SearchDialog(type,title,year,season,number):
 				continue
 			id = file['info_hash']
 			dirname = file['name']
+			mysize = size(int(file['size']))
 			valid = False
 
 			#print ('Dirname ' + dirname)
@@ -127,9 +129,6 @@ def SearchDialog(type,title,year,season,number):
 					titletoCheck = common.CleanFileName(title).lower().replace(' ','')
 					if myParser.quality: myquality = myParser.quality
 					movie_name = '''{0} {1} S{2:0>2}E{3:0>2}'''.format(myquality,myNametoCheck, mySeason, myNumber)
-					movie_name2 = '''Z:{0} {1} S{2}E{3}'''.format('unk',titletoCheck, season, number)
-					#print movie_name
-					#print movie_name2
 					if int(mySeason) <> int(season):
 						print 'break'
 						break
@@ -141,7 +140,7 @@ def SearchDialog(type,title,year,season,number):
 					#Notification(mycheck.lower(),query.lower())
 					if valid:
 						#Notification('Quality:',str(myquality))
-						quality_options.append(str(myquality) + ' ' + dirname)
+						quality_options.append('[' + mysize + '] '+str(myquality) + ' ' + dirname)
 						quality_ids.append(file['info_hash'])
 						quality_cleanname.append(dirname)
 						quality_urls.append(None)
@@ -174,7 +173,7 @@ def SearchDialog(type,title,year,season,number):
 					valid = True
 
 				if valid:
-					quality_options.append(movie_name)
+					quality_options.append('[' + mysize + '] '+ movie_name)
 					quality_cleanname.append(dirname)
 					quality_ids.append(file['info_hash'])
 					if not str(myquality) in unique_qualities:
@@ -404,6 +403,7 @@ def filebyfile(id,dirname,title,year,season,number):
 		for f in files:
 			name = f['name']
 			path = f['path'].replace('/',' ')
+			mysize = size(int(f['size']))
 			if 'sample' in name.lower() or 'subs' in name.lower():
 				continue
 			play_url = f['url_dl']
@@ -439,14 +439,14 @@ def filebyfile(id,dirname,title,year,season,number):
 					valid= True
 	
 			if valid:
-				quality_options.append(str(myquality) + ' ' + name)
+				quality_options.append('[' + mysize + '] '+str(myquality) + ' ' + name)
 				quality_cleanname.append(clean_name)
 				quality_urls.append(play_url)
 				if not str(myquality) in unique_qualities:
 					unique_qualities.append(str(myquality))
 				break
 			else:
-				unquality_options.append(movie_name)
+				unquality_options.append('[' + mysize + '] '+movie_name)
 				unquality_cleanname.append(movie_name)
 				unquality_urls.append(play_url)
 		return
