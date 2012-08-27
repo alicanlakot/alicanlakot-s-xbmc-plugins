@@ -196,7 +196,7 @@ def checkWatched(movie):
 		refreshWatched=True
 	else:
 		f = os.path.getmtime(filename)
-		if time.time() - f > 3000:
+		if time.time() - f > 30000:
 			refreshWatched=True
 		else:
 			refreshWatched=False
@@ -305,7 +305,7 @@ def createShowListItemTrakt(show, totalItems = 10,season =1,episode=1):
 	        cm = [( "Mark Show as seen", "XBMC.RunPlugin(%s?action=trakt_SetShowSeen&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid), ) ,  ( "Dismiss show", "XBMC.RunPlugin(%s?action=trakt_DismissShow&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid), ) ,  ( "Add show to watchlist", "XBMC.RunPlugin(%s?action=trakt_AddShowtoWatchlist&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid), ) ]
 	
 	elif tvdbid: 
-	        cm = [( "Mark Episode as seen", "XBMC.RunPlugin(%s?action=trakt_SetShowSeen&tvdbid=%s&season=%s&episode=%s)" % ( sys.argv[ 0 ], tvdbid,season,episode), ) ,  ( "Dismiss show", "XBMC.RunPlugin(%s?action=trakt_DismissShow&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid), ) ,  ( "Add show to watchlist", "XBMC.RunPlugin(%s?action=trakt_AddShowtoWatchlist&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid), ) ]
+	        cm = [( "Watch previous episode - beta", "XBMC.RunPlugin(%s?action=SearchMe&go=now&type=Show&title=%s&season=%s&episode=%s&tvdbid=%s)" % ( sys.argv[ 0 ], show['title'],season,episode-1,tvdbid), ) , ( "Mark Episode as seen", "XBMC.RunPlugin(%s?action=trakt_SetShowSeen&tvdbid=%s&season=%s&episode=%s)" % ( sys.argv[ 0 ], tvdbid,season,episode), ) ,  ( "Dismiss show", "XBMC.RunPlugin(%s?action=trakt_DismissShow&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid), ) ,  ( "Add show to watchlist", "XBMC.RunPlugin(%s?action=trakt_AddShowtoWatchlist&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid), ) ]
 
         li.addContextMenuItems( cm, replaceItems=False )
 	if show:

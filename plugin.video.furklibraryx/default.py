@@ -52,7 +52,7 @@ from sites import vcdq
 from sites import imdb
 from sites import torrentfreak
 from sites import furklib
-
+from sites import rotten
 
 print sys.modules[ "__main__" ]
 
@@ -67,6 +67,7 @@ def AddonMenu():  #homescreen
 	common.createListItem('My Files',True,url + 'myFiles')
 	common.createListItem('Search',True,url + 'search')
 	common.createListItem('Trakt',True,url + 'trakt_Menu')
+	common.createListItem('Rotten Tomatoes',True,url + 'rotten_Menu')
 	common.createListItem('Add watchlist to your library',False,url + 'traktlib')
 	common.createListItem('VCDQ New Releases',True, url + 'vcdq')
 	#common.createListItem('MovieLens',True, url + 'movielens')
@@ -269,6 +270,10 @@ elif(params['action'].startswith('imdb_')):
 elif(params['action'].startswith('trakt_')):
 	trakt.traktAction(params)
 
+elif(params['action'].startswith('rotten_')):
+	rotten.rottenAction(params)
+
+
 elif(params['action'] == 'traktlib'):
 	try:
 		fg = params['fg']
@@ -288,6 +293,8 @@ elif(params['action'] == 'download'):
 	url = params['url']
 	filename = params['filename']
 	common.download(url,filename)
+
+
 
 elif(params['action'] == 'setup'):
 	settings.setSetting('first_time_startup','true')
