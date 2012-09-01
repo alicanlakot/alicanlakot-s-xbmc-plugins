@@ -37,9 +37,7 @@ def getTraktConnection():
 # silent: default is False, when true it disable any error notifications (but not print messages)
 # passVersions: default is False, when true it passes extra version information to trakt to help print problems
 def traktJsonRequest(method, req, args={}, returnStatus=False, anon=False, conn=False, silent=False, passVersions=False):
-    closeConnection = False
     conn = getTraktConnection()
-    closeConnection = True
     #req = 'http://api.rottentomatoes.com' + req
     req = req.replace("%%API_KEY%%",apikey)
     req = req.replace("%%USERNAME%%",settings.getSetting('trakt_login'))
@@ -96,11 +94,13 @@ def showMovies(movies):
 		except:
 			imdbid = None
 		if imdbid:
-			common.createMovieListItemfromimdbid(imdbid,totalItems = len(movies))
+			rating = '[ ' + str(movie['ratings']['critics_rating']) + ' ' + str(movie['ratings']['critics_score']) + '%] '
+			common.createMovieListItemfromimdbid(imdbid,totalItems = len(movies),extrainfo = rating + '{0} ({1})')
 		else:
 			movietitle = movie['title']
 			movieyear = movie['year']
-			createMovieListItemTrakt(None,movietitle,movieyear,totalItems = len(movies))
+			rating = '[ ' + str(movie['ratings']['critics_rating']) + ' ' + str(movie['ratings']['critics_score']) + '%] '
+			common.createMovieListItemTrakt(None,movietitle,movieyear,totalItems = len(movies), extrainfo = rating + '{0} ({1})')
 	common.endofDir()
 
 def displayRottenMenu():

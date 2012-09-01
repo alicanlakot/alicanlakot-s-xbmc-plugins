@@ -262,7 +262,7 @@ def createMovieListItemfromimdbid(imdbid,totalItems = 10 , extrainfo = None):
 	return
 
 
-def createMovieListItemTrakt(movie, movietitle = None,movieyear = None, totalItems = 10):
+def createMovieListItemTrakt(movie, movietitle = None,movieyear = None, totalItems = 10 , extrainfo = None):
 	if movie:
 		movietitle = movie['title']
 		movieyear = movie['year']
@@ -272,7 +272,11 @@ def createMovieListItemTrakt(movie, movietitle = None,movieyear = None, totalIte
 	try:
 		s =  movie['extrainfo'].format(movietitle.encode("utf-8"),movieyear)
 	except:
-		s= '{0} ({1})'.format(movietitle.encode("utf-8"),movieyear)
+		if extrainfo:
+			s= extrainfo.format(movietitle.encode("utf-8"),movieyear)
+		else:
+			s= '{0} ({1})'.format(movietitle.encode("utf-8"),movieyear)
+	
 	li = xbmcgui.ListItem(s)
 
 	if imdbid:
@@ -342,7 +346,9 @@ def createListItem(text, isFolder, url, name='',totalItems = 10):
 
 
 def endofDir():
-	xbmcplugin.endOfDirectory(int(sys.argv[1]))
+	pluginhandle=int(sys.argv[1])
+	xbmcplugin.endOfDirectory(pluginhandle)
+        xbmcplugin.addSortMethod(pluginhandle, xbmcplugin.SORT_METHOD_VIDEO_RATING)
 	return
 
 def checkEnded(show_name):

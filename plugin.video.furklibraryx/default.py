@@ -18,6 +18,7 @@
 
 import sys, urllib, time, re, os
 import xbmc, xbmcaddon, xbmcgui, xbmcplugin
+import context
 from utils import settings
 
 # Plugin constants
@@ -41,7 +42,7 @@ else:
 	MOVIES_PATH = os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.furklibraryx/movies'), '')
 
 CACHE_PATH= os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.furklibraryx/traktcache'), '')
-
+MYCONTEXT = context.context().getContext()
 
 from utils import searcher
 from utils import common
@@ -53,6 +54,7 @@ from sites import imdb
 from sites import torrentfreak
 from sites import furklib
 from sites import rotten
+import music
 
 print sys.modules[ "__main__" ]
 
@@ -64,6 +66,8 @@ def parse_qs(u):
 def AddonMenu():  #homescreen
 	print 'FurkLibrary menu'
 	url = sys.argv[0]+'?action=' 
+	#common.createListItem(params['content_type'],True,url + 'myFiles')
+	
 	common.createListItem('My Files',True,url + 'myFiles')
 	common.createListItem('Search',True,url + 'search')
 	common.createListItem('Trakt',True,url + 'trakt_Menu')
@@ -273,6 +277,9 @@ elif(params['action'].startswith('trakt_')):
 elif(params['action'].startswith('rotten_')):
 	rotten.rottenAction(params)
 
+elif(params['action'].startswith('music_')):
+	music.musicAction(params)
+
 
 elif(params['action'] == 'traktlib'):
 	try:
@@ -304,9 +311,12 @@ elif(params['action'] == 'setup'):
 else:
         # torrents a root Directories 
         xbmc.log('argv=%s' % sys.argv)
-	common.createCachePath()
-	setup()
-	AddonMenu()
+	if (MYCONTEXT == 'video'):
+		common.createCachePath()
+		setup()
+		AddonMenu()
+	else:
+		music.AddonMenu()
                 
 
 print 'Closing FurkLib'

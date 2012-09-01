@@ -21,14 +21,14 @@ This is not longer supported, please download Furk Library 2 from alicanlakot's 
 	</extension>
 </addon>
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="plugin.video.furklibraryx" version="1.2.2" name="Furk.net Library 2" provider-name="alicanlakot">
+<addon id="plugin.video.furklibraryx" version="1.2.3" name="Furk.net Library 2" provider-name="alicanlakot">
 	<requires>
 		<import addon="script.module.beautifulsoup" version="3.0.8"/>
 		<import addon="xbmc.python" version="2.0"/>
 	</requires>
 	<extension point="xbmc.python.pluginsource"
 	           library="default.py">
-		<provides>video</provides>
+		<provides>video audio</provides>
 	</extension>
 	<extension point="xbmc.service"
              library="service.py" start="[login|startup]">
