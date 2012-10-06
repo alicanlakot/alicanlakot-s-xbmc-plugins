@@ -142,6 +142,19 @@ def addMovietoWatchlist(imdbid):
 	    print("Error in request from 'addMovietoWatchlist()'")
     return data
 
+def removeMoviefromWatchlist(imdbid):
+    args = {}
+    movies = []
+    movie = {}
+    movie['imdb_id'] = imdbid
+    movies.append(movie)
+    args['movies'] = movies
+    data = traktJsonRequest('POST', '/movie/unwatchlist/%%API_KEY%%' ,args)
+    if data == None:
+	    print("Error in request from 'removeMoviefromWatchlist()'")
+    return data
+
+
 def dismissMovie(imdbid):
 	args = {}
 	args['imdb_id'] = imdbid
@@ -150,7 +163,7 @@ def dismissMovie(imdbid):
 
 
 def getTrendingMoviesFromTrakt():
-    data = traktJsonRequest('POST', '/movies/trending.json/%%API_KEY%%')
+    data = traktJsonRequest('GET', '/movies/trending.json/%%API_KEY%%')
     if data == None:
         print("Error in request from 'getTrendingMoviesFromTrakt()'")
     return data

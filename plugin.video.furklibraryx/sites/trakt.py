@@ -323,6 +323,10 @@ def traktAction(params):
 		imdbid = params['imdbid']
 		addMovietoWatchlist(imdbid)
 
+	elif(params['action'] == 'trakt_RemoveMoviefromWatchlist'):
+		imdbid = params['imdbid']
+		response = traktlib.removeMoviefromWatchlist(imdbid)
+		common.traktResponse(response)
 
 	elif(params['action'] == 'trakt_DismissShow'):
 		tvdbid = params['tvdbid']

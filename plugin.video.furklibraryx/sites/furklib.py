@@ -131,4 +131,8 @@ def login(username,password):
 	resp = urllib2.urlopen(req)
 	out = json.loads(resp.read())
 	#notification ('output' , out['api_key'])
-	settings.setSetting('furk_apikey',out['api_key'])
+	try:
+		settings.setSetting('furk_apikey',out['api_key'])
+	except:
+		notification ('output' , out)
+		

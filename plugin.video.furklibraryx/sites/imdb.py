@@ -26,15 +26,21 @@ def getImdbtop250(page):
         return 
 
 def getImdbRentals():
-	response = urllib2.urlopen('http://www.imdb.com/boxoffice/rentals')
-	html = response.read()
-	#entries = re.findall(r'<tr align=right><td><b>(\d{1,3})</b>\.</td><td align=center>(\d{1,3})</td><a href="/title/tt(\d{7})/">([^<]+)</a> \((\d{4})\)</b></td><td>(\d{1,3}(?:,\d{3})*)</td></tr>', html)
-	entries = re.findall(r'<td align=left><b><a href="/title/tt(\d{7})/">([^<]+)</a> \((\d{4})\)</b></td>',html)
+	entries = getImdbRentalsList()
 	for entry in entries:
 		link_number,title,year = entry
 		common.createMovieListItemfromimdbid(link_number,len(entries))
 	common.endofDir()
         return 
+
+def getImdbRentalsList():
+	response = urllib2.urlopen('http://www.imdb.com/boxoffice/rentals')
+	html = response.read()
+	#entries = re.findall(r'<tr align=right><td><b>(\d{1,3})</b>\.</td><td align=center>(\d{1,3})</td><a href="/title/tt(\d{7})/">([^<]+)</a> \((\d{4})\)</b></td><td>(\d{1,3}(?:,\d{3})*)</td></tr>', html)
+	entries = re.findall(r'<td align=left><b><a href="/title/tt(\d{7})/">([^<]+)</a> \((\d{4})\)</b></td>',html)
+        return entries
+
+
 
 def displayIMDBMenu():
 	url = sys.argv[0]+'?action='

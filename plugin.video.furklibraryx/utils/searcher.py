@@ -62,9 +62,11 @@ def SearchDialog(type,title,year,season,number):
 	global unquality_cleanname
 	global unquality_ids
 	global unique_qualities
-		
 
-
+	updateDialog = xbmcgui.DialogProgress()
+        updateDialog.create("Furk Library", "Searching")
+	updateDialog.update(20, "searching", title)	
+	
 	dialog = xbmcgui.Dialog()
 	title = common.CleanFileName(title)
 
@@ -83,7 +85,7 @@ def SearchDialog(type,title,year,season,number):
 		query = title
 		dirs = furklib.searchFurk(title)
 
-
+	updateDialog.close()
 	k = 0
 	found720p = False
 	foundDvd = False

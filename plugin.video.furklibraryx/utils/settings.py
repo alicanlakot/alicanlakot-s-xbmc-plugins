@@ -20,7 +20,7 @@ def getTimersetting():
 
 def startTimer():
 	if ADDON.getSetting('auto_update') == "true":
-		xbmc.executebuiltin("AlarmClock(updateFurklibrary,XBMC.RunScript(special://home/addons/plugin.video.furklibrary2/default.py,0,?action=traktlib&fg=False)," + getTimersetting() + ",False)")
+		xbmc.executebuiltin("AlarmClock(updateFurklibrary,XBMC.RunScript(special://home/addons/plugin.video.furklibraryx/default.py,0,?action=traktlib&fg=False)," + getTimersetting() + ",False)")
 
 def first_time_startup():
     if ADDON.getSetting('first_time_startup') == "true":

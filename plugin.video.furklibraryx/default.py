@@ -42,7 +42,11 @@ else:
 	MOVIES_PATH = os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.furklibraryx/movies'), '')
 
 CACHE_PATH= os.path.join(xbmc.translatePath('special://profile/addon_data/plugin.video.furklibraryx/traktcache'), '')
-MYCONTEXT = context.context().getContext()
+try:
+	MYCONTEXT = context.context().getContext()
+except:
+	MYCONTEXT = 'video'
+
 
 from utils import searcher
 from utils import common
@@ -71,6 +75,7 @@ def AddonMenu():  #homescreen
 	common.createListItem('My Files',True,url + 'myFiles')
 	common.createListItem('Search',True,url + 'search')
 	common.createListItem('Trakt',True,url + 'trakt_Menu')
+	common.createListItem('Trailers',False,url + 'Trailers')
 	common.createListItem('Rotten Tomatoes',True,url + 'rotten_Menu')
 	common.createListItem('Add watchlist to your library',False,url + 'traktlib')
 	common.createListItem('VCDQ New Releases',True, url + 'vcdq')
@@ -149,6 +154,10 @@ xbmc.log('params_str=%s' % sys.argv[2])
 params = parse_qs(sys.argv[2])
 if not params:
         params['action'] = 'dirs'
+try:
+	action = params['action']
+except:
+	params['action'] = 'dirs'
 xbmc.log('_params=%s' % params) 
 
 
@@ -207,8 +216,13 @@ elif(params['action'] == 'scrapeMovie'):
 	common.Notification ('Added to library:',title)
 	xbmc.executebuiltin('UpdateLibrary(video)')
 
+elif(params['action'] == 'Trailers'):
+	#xbmc.executebuiltin("XBMC.RunScript(special://home/addons/script.furktrailers/default.py)")
+	xbmc.executebuiltin("XBMC.RunScript(special://home/addons/plugin.video.furklibraryx/trailers.py)")
+
 elif(params['action'] == 'SearchMe'):
         # Search
+
 	type = params['type']
 	year= 0
 	season = 0
@@ -229,10 +243,15 @@ elif(params['action'] == 'SearchMe'):
 			episodedata = None
 
 	elif type=='Movie':
-	        title = params['title']
-		year = params['year']
-		imdbid = params['imdbid']
+	        imdbid = params['imdbid']
 		movie = common.getMovieInfobyImdbid(imdbid)
+		if movie:
+			title = movie['title']
+			year = movie['year']
+
+		else:
+			title = params['title']
+			year = params['year']
 	else:
 		type = 'Movie'
 		title = params['query']
@@ -247,6 +266,9 @@ elif(params['action'] == 'SearchMe'):
 
 
 	myname,myurl = searcher.SearchDialog(type,title,year,season,episode)
+
+
+
         if myurl:
 		#common.Notification("Found"," and playing!")
 		time.sleep(1)

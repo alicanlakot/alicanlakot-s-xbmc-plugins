@@ -28,7 +28,7 @@
 		<setting id="criticker_apikey" type="text" label="20003" default=""/>
 	</category>
 	<setting id="first_time_startup" type="bool" label="20003" default="true" visible="false"/>
-
+	<setting id="last_trailer" type="text" label="20003" default="0" visible="false"/>
 
 </settings>
 
