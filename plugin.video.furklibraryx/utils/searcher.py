@@ -276,7 +276,7 @@ def SearchDialog(type,title,year,season,number):
 			pass
 
 		
-		
+		pDialog.close()
 
 	if len(quality_options)==0 and len(unquality_options)>0:
 		dialog = xbmcgui.Dialog()	
