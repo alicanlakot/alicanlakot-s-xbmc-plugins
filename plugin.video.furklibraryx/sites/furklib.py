@@ -77,7 +77,8 @@ def furkJsonRequest(method, req, args={}, returnStatus=False, anon=False, conn=F
             print("traktQuery: Error: " + str(data['error']))
             if returnStatus:
                 return data;
-            if not silent: notification("Trakt Utilities", str(data['error'])) # Error
+            if not silent: notification("Furk Library", str(data['error'])) # Error
+	    login(settings.getSetting('furk_login'),settings.getSetting('furk_password'))
             return None
 
     return data
@@ -133,6 +134,7 @@ def login(username,password):
 	#notification ('output' , out['api_key'])
 	try:
 		settings.setSetting('furk_apikey',out['api_key'])
+		notification ('Login to Furk succesful for' , username)
 	except:
 		notification ('output' , out)
 		

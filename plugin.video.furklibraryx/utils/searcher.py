@@ -1,4 +1,4 @@
-import xbmcgui
+import xbmcgui,xbmc
 import re
 import sys,unicodedata
 from sites import furklib
@@ -63,11 +63,11 @@ def SearchDialog(type,title,year,season,number):
 	global unquality_ids
 	global unique_qualities
 
-	updateDialog = xbmcgui.DialogProgress()
-        updateDialog.create("Furk Library", "Searching")
-	updateDialog.update(20, "searching", title)	
+	#updateDialog = xbmcgui.DialogProgress()
+        #updateDialog.create("Furk Library", "Searching")
+	#updateDialog.update(20, "searching", title)	
 	
-	dialog = xbmcgui.Dialog()
+
 	title = common.CleanFileName(title)
 
 	if type=='Movie':
@@ -85,12 +85,12 @@ def SearchDialog(type,title,year,season,number):
 		query = title
 		dirs = furklib.searchFurk(title)
 
-	updateDialog.close()
+	#updateDialog.close()
 	k = 0
 	found720p = False
 	foundDvd = False
-	pDialog = xbmcgui.DialogProgress()
-	pDialog.create('Searching for files')
+	#pDialog = xbmcgui.DialogProgress()
+	#pDialog.create('Searching for files')
 	count = 0
 
 	if dirs:
@@ -100,10 +100,10 @@ def SearchDialog(type,title,year,season,number):
 			text = "%s files found ->" % len(quality_options) 
 			for qual in unique_qualities:
 				text = text + qual +','
-			pDialog.update(percent, text)
-			if pDialog.iscanceled(): 
-				pDialog.close()
-				break
+			#pDialog.update(percent, text)
+			#if pDialog.iscanceled(): 
+			#	pDialog.close()
+			#	break
 
 			if file['is_ready']=='0':
 				continue
@@ -210,8 +210,8 @@ def SearchDialog(type,title,year,season,number):
 		dir_names = []
 		dir_ids = []
 		
-		pDialog = xbmcgui.DialogProgress()
-		pDialog.create('Searching for files')
+		#pDialog = xbmcgui.DialogProgress()
+		#pDialog.create('Searching for files')
 	        count = 0
 
 		for d in dirs2:
@@ -222,10 +222,10 @@ def SearchDialog(type,title,year,season,number):
 			for qual in unique_qualities:
 				text = text + qual +','
 
-		        pDialog.update(percent, text)
-			if pDialog.iscanceled(): 
-		                pDialog.close()
-		                break
+		        #pDialog.update(percent, text)
+			#if pDialog.iscanceled(): 
+		        #        pDialog.close()
+		        #        break
 
 			if d['is_ready']=='0':
 				continue
@@ -250,33 +250,17 @@ def SearchDialog(type,title,year,season,number):
 			dir_ids.append(d['info_hash'])
 					
 		
-		if len(dir_names)>0 and len(dir_names)<2:
+		if len(dir_names)>0:
 			idx = 0
 			for dirname in dir_names:
 				id = dir_ids[idx]
 				idx = idx + 1 
 				filebyfile(id,dirname,title,year,season,number)
-
-		elif len(dir_names)>7 or len(quality_options)==0:
-			dir_names = []
-			dir_ids = []
-			for d in dirs2:
-				if d['is_ready']=='0':
-					continue
-				dir_names.append(d['name'])
-				dir_ids.append(d['info_hash'])
-
-			dir_select = dialog.select('Select directory', dir_names)
-			id = dir_ids[dir_select]
-			dirname = dir_names[dir_select]
-			filebyfile(id,dirname,title,year,season,number)
-			if len(quality_options)==0:
-				listfiles(id)
 		else:
 			pass
 
 		
-	pDialog.close()
+	#pDialog.close()
 
 	if len(quality_options)==0 and len(unquality_options)>0:
 		dialog = xbmcgui.Dialog()	
@@ -288,6 +272,7 @@ def SearchDialog(type,title,year,season,number):
 	
 
         if len(quality_options) > 1 :       
+		dialog = xbmcgui.Dialog()	
 		quality_select = dialog.select('Select quality', quality_options)
 	elif len(quality_options)==1:
 		common.Notification('Found only:',quality_options[0].split(' ',1)[0])
@@ -328,6 +313,7 @@ def SearchDialog(type,title,year,season,number):
 		elif type=='Movie':
 				myid = quality_ids[quality_select]
 				files = furklib.fileInfo(myid)
+				myurl = None
 				for f in files:
 					myname = f['name'].lower()
 					#print myname
@@ -343,7 +329,11 @@ def SearchDialog(type,title,year,season,number):
 
 
 		#common.Notification('Found',myname)
-		return myname,myurl
+		if myurl:
+			return myname,myurl
+		else:
+			common.Notification('Not Found' , 'Please try again')
+			return None,None
 
 def guess_series(title):
         """Returns a valid series parser if this :title: appears to be a series"""

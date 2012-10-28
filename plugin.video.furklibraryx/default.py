@@ -92,11 +92,15 @@ def setup_sources():
     source_path = os.path.join(xbmc.translatePath('special://profile/'), 'sources.xml')
     
     try:
-        f = open(source_path, 'r')
+        f = open(source_path, 'a+')
+	f.seek(0)
         content = f.read()
         f.close()
         r = re.search("(?i)(<sources>[\S\s]+?<video>[\S\s]+?>)\s+?(</video>[\S\s]+?</sources>)", content)
-        new_content = r.group(1)
+	if r:
+	        new_content = r.group(1)
+	else:
+		new_content = '<sources><video>'
         if not check_sources_xml(MOVIES_PATH):
             new_content += '<source><name>Movies (furklib2)</name><path pathversion="1">'
             new_content += MOVIES_PATH
@@ -105,7 +109,10 @@ def setup_sources():
             new_content += '<source><name>TV Shows (furklib2)</name><path pathversion="1">'
             new_content += TV_SHOWS_PATH
             new_content += '</path></source>'
-        new_content += r.group(2)
+	if r:
+	        new_content += r.group(2)
+	else:
+	        new_content += '</video></sources>'
         
         f = open(source_path, 'w')
         f.write(new_content)
@@ -114,14 +121,16 @@ def setup_sources():
         dialog = xbmcgui.Dialog()
         dialog.ok("Source folders added", "To complete the setup:", " 1) Restart XBMC.", " 2) Set the content type of added sources.")
         #if dialog.yesno("Restart now?", "Do you want to restart XBMC now?"):
-            #xbmc.restart()
+		#xbmc.restart()
     except:
+	raise
         xbmc.log("Could not edit sources.xml")
         
 def check_sources_xml(path):
     try:
         source_path = os.path.join(xbmc.translatePath('special://profile/'), 'sources.xml')
-        f = open(source_path, 'r')
+        f = open(source_path, 'a+')
+	f.seek(0)
         content = f.read()
         f.close()
         path = str(path).replace('\\', '\\\\')
@@ -222,7 +231,6 @@ elif(params['action'] == 'Trailers'):
 
 elif(params['action'] == 'SearchMe'):
         # Search
-
 	type = params['type']
 	year= 0
 	season = 0

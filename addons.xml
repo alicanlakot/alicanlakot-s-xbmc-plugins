@@ -21,7 +21,7 @@ This is not longer supported, please download Furk Library 2 from alicanlakot's 
 	</extension>
 </addon>
 <?xml version="1.0" encoding="UTF-8"?>
-<addon id="plugin.video.furklibraryx" version="1.2.7" name="Furk.net Library 2" provider-name="alicanlakot">
+<addon id="plugin.video.furklibraryx" version="1.2.8" name="Furk.net Library 2" provider-name="alicanlakot">
 	<requires>
 		<import addon="script.module.beautifulsoup" version="3.0.8"/>
 		<import addon="xbmc.python" version="2.0"/>
