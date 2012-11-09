@@ -17,6 +17,7 @@
 '''
 
 import time
+import XBMC
 from utils import settings
 print "[PLUGIN] Furk Lib Service initialized!" 
 
