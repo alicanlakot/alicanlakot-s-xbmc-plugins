@@ -20,6 +20,6 @@ import time
 from utils import settings
 print "[PLUGIN] Furk Lib Service initialized!" 
 
-time.sleep(5)
+time.sleep(60)
+XBMC.RunScript("special://home/addons/plugin.video.furklibraryx/default.py,0,?action=traktlib&fg=False")
 settings.startTimer()
-time.sleep(10)

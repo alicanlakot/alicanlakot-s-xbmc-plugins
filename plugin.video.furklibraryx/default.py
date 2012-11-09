@@ -231,72 +231,73 @@ elif(params['action'] == 'Trailers'):
 
 elif(params['action'] == 'SearchMe'):
         # Search
-	type = params['type']
-	year= 0
-	season = 0
-	episode = 0
-	movie = None
-	if type=='Show':
-		type = params['type']
-		season = params['season']
-		episode = params['episode']
-		title = params['title']
-		try:
-			tvdbid = params['tvdbid']
-		except:
-			tvdbid = None
-		if tvdbid:
-			episodedata = traktlib.getEpisodeInfo(tvdbid,season,episode)
-		else:
-			episodedata = None
-
-	elif type=='Movie':
-	        imdbid = params['imdbid']
-		movie = common.getMovieInfobyImdbid(imdbid)
-		if movie:
+    type = params['type']
+    year= 0
+    season = 0
+    episode = 0
+    movie = None
+    if type=='Show':
+        type = params['type']
+        season = params['season']
+        episode = params['episode']
+        title = params['title']
+        try:
+            tvdbid = params['tvdbid']
+        except:
+		    tvdbid = None
+        if tvdbid:
+            episodedata = traktlib.getEpisodeInfo(tvdbid,season,episode)
+        else:
+            episodedata = None
+            
+    elif type=='Movie':
+        imdbid = params['imdbid']
+        movie = common.getMovieInfobyImdbid(imdbid)
+        if movie:
 			title = movie['title']
 			year = movie['year']
-
-		else:
+        else:
 			title = params['title']
 			year = params['year']
-	else:
+    else:
 		type = 'Movie'
 		title = params['query']
-
-	try:
-		go = params['go']
-		go = True
-	except:
+        
+    go = False
+    try:
+        go = params['go']
+        if go:
+            go=True
+    except:
 		go = False
 
 	
 
+    print go
+    myname,myurl = searcher.SearchDialog(type,title,year,season,episode,go)
 
-	myname,myurl = searcher.SearchDialog(type,title,year,season,episode)
 
 
-
-        if myurl:
+    if myurl:
 		#common.Notification("Found"," and playing!")
-		time.sleep(1)
-                listitem = xbmcgui.ListItem(myname, path=myurl)
-	        listitem.setLabel(myname)
-		listitem.setProperty("IsPlayable", "true")
-		if movie:
-			common.addMovieInfotoPlayListitem(listitem,movie)
+        time.sleep(1)
+        listitem = xbmcgui.ListItem(myname, path=myurl)
+        listitem.setLabel(myname)
+        listitem.setProperty("IsPlayable", "true")
+        if movie:
+		          common.addMovieInfotoPlayListitem(listitem,movie)
 			#common.Notification("Found"," Movie!")
 			
-		elif episodedata:	
+        elif episodedata:	
 			common.addEpisodeInfotoListitem(listitem,episodedata)
 
-		xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),True,listitem)
-		print myname
-		print myurl
-		if go:
+        xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),True,listitem)
+        print myname
+        print myurl
+        if go:
 			xbmc.Player().play(myurl, listitem)
-	else:
-                xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),False,xbmcgui.ListItem())
+        else:
+            xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),False,xbmcgui.ListItem())
 
 elif(params['action'].startswith('imdb_')):
 	imdb.imdbAction(params)

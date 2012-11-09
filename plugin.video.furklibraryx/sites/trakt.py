@@ -147,25 +147,41 @@ def calculateProgress():
 	for current in progress:
 		lastseason = 100
 		lastepisode = 100
-		for season in current['seasons']:
-			seasonnumber = int(season['season'])
-			for episode in season ['episodes']:
-				if not season ['episodes'][episode]:
-					myseason,myepisode = seasonnumber,int(episode)
-					if myseason<lastseason:
-						lastseason = myseason
-						lastepisode = 100
-					if myseason==lastseason and myepisode<lastepisode:
-						lastepisode = myepisode
+		allwatched = False
+		if current['progress']['left']<>0:
+			for season in current['seasons']:
+				seasonnumber = int(season['season'])
+				for episode in season ['episodes']:
+					if not season ['episodes'][episode]:
+						myseason,myepisode = seasonnumber,int(episode)
+						if myseason<lastseason:
+							lastseason = myseason
+							lastepisode = 100
+						if myseason==lastseason and myepisode<lastepisode:
+							lastepisode = myepisode
 					#print '{0} S{1} E{2} / S{3} E{4}'.format(current['show']['title'],myseason,myepisode,lastseason,lastepisode)
-
+		else:
+			allwatched = True
 		#print '{0} S{1} E{2}'.format(current['show']['title'],lastseason,lastepisode)
 		#break
 		show = {}
 		if lastseason<>100:
 			shows[current['show']['title']]= (lastseason,lastepisode)
+		elif allwatched:
+			shows[current['show']['title']]= (0,0)
+		
 	return shows
 
+def displayList(user,slug):
+	myList = traktlib.getList(user,slug)
+	movies = []
+	for item in myList['items']:
+		if item['type']=="movie":
+			movies.append(item['movie'])
+	for movie in movies:
+		common.createMovieListItemTrakt(movie,totalItems = len(movies))
+	common.endofDir()
+	return
 
 def displayRecommendedMovies(genre):
 	movies = traktlib.getRecommendedMoviesFromTrakt(genre)
@@ -360,19 +376,35 @@ def traktAction(params):
 	
 	elif(params['action'] == 'trakt_Progress'):
 		displayProgress()
+	elif(params['action'] == 'trakt_getList'):
+		user=params['user']
+		slug=params['slug']
+		displayList(user,slug)
 	else:
 		common.Notification('Action Not found:' , params['action'])
 
 def displayTraktMenu():
 	
 	url = sys.argv[0]+'?action=' 
+	common.createListItem('--------------MOVIES------------------', False, '')
 	common.createListItem('Recommended Movies', True, url+'trakt_RecommendedMovies')
 	common.createListItem('Trending Movies', True, url +'trakt_TrendingMovies')
 	common.createListItem('Search Movies', True, url +'trakt_SearchMovies')
-	common.createListItem('--------------------------------------------', False, '')
+	common.createListItem('--------------SHOWS-----------------------', False, '')
 	common.createListItem('Tv Show Progress', True, url+'trakt_Progress')
 	common.createListItem('Recommended Shows', True, url +'trakt_RecommendedShows')
 	common.createListItem('Trending Shows', True, url +'trakt_TrendingShows')
 	common.createListItem('Search Shows', True, url +'trakt_SearchShows')
-
+	common.createListItem('---------------LISTS----------------------', False, '')
+	common.createListItem('Academy Award For Best Picture by chrisu', True, url +'trakt_getList&user=chrisu&slug=academy-award-for-best-picture')
+	common.createListItem('James Bond 007 Collection by ltfearme', True, url +'trakt_getList&user=ltfearme&slug=james-bond-007-collection')
+	#http://trakt.tv/user/ltfearme/lists/james-bond-007-collection
+	common.createListItem('ALL IMDB Top 250 Movies Ever by totopsgr', True, url +'trakt_getList&user=totopsgr&slug=all-imdb-top-250-movies-ever')
+	#http://trakt.tv/user/totopsgr/lists/all-imdb-top-250-movies-ever
+	common.createListItem('Best Mindfucks by BenFranklin', True, url +'trakt_getList&user=BenFranklin&slug=best-mindfucks')
+	#http://trakt.tv/user/BenFranklin/lists/best-mindfucks
+	common.createListItem('Studio Ghibli Feature-films by Draackje', True, url +'trakt_getList&user=Draackje&slug=studio-ghibli-feature-films')
+	#http://trakt.tv/user/Draackje/lists/studio-ghibli-feature-films
+	common.createListItem('Criterion Collection by gubarenko', True, url +'trakt_getList&user=gubarenko&slug=criterion-collection')
+	#http://trakt.tv/user/gubarenko/lists/criterion-collection
 	common.endofDir()

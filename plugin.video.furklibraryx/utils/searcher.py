@@ -52,7 +52,7 @@ def ListFiles(id):
 	common.endofDir()
 	return
 
-def SearchDialog(type,title,year,season,number):
+def SearchDialog(type,title,year,season,number,go=False):
 	global quality_options
 	global quality_urls
 	global quality_cleanname 
@@ -63,9 +63,10 @@ def SearchDialog(type,title,year,season,number):
 	global unquality_ids
 	global unique_qualities
 
-	#updateDialog = xbmcgui.DialogProgress()
-        #updateDialog.create("Furk Library", "Searching")
-	#updateDialog.update(20, "searching", title)	
+	if go:
+		updateDialog = xbmcgui.DialogProgress()
+		updateDialog.create("Furk Library", "Searching")
+		updateDialog.update(20, "searching", title)	
 	
 
 	title = common.CleanFileName(title)
@@ -84,13 +85,14 @@ def SearchDialog(type,title,year,season,number):
 	else:
 		query = title
 		dirs = furklib.searchFurk(title)
-
-	#updateDialog.close()
+	if go:
+		updateDialog.close()
 	k = 0
 	found720p = False
 	foundDvd = False
-	#pDialog = xbmcgui.DialogProgress()
-	#pDialog.create('Searching for files')
+	if go:
+		pDialog = xbmcgui.DialogProgress()
+		pDialog.create('Searching for files')
 	count = 0
 
 	if dirs:
@@ -100,10 +102,11 @@ def SearchDialog(type,title,year,season,number):
 			text = "%s files found ->" % len(quality_options) 
 			for qual in unique_qualities:
 				text = text + qual +','
-			#pDialog.update(percent, text)
-			#if pDialog.iscanceled(): 
-			#	pDialog.close()
-			#	break
+			if go:
+				pDialog.update(percent, text)
+				if pDialog.iscanceled(): 
+					pDialog.close()
+					break
 
 			if file['is_ready']=='0':
 				continue
@@ -210,22 +213,24 @@ def SearchDialog(type,title,year,season,number):
 		dir_names = []
 		dir_ids = []
 		
-		#pDialog = xbmcgui.DialogProgress()
-		#pDialog.create('Searching for files')
-	        count = 0
+		if go:
+			pDialog = xbmcgui.DialogProgress()
+			pDialog.create('Searching for files')
+		
+		count = 0
 
 		for d in dirs2:
 			
 			count = count + 1
-		        percent = int(float(count * 100) / len(dirs2))
+			percent = int(float(count * 100) / len(dirs2))
 			text = "%s files found ->" % len(quality_options) 
 			for qual in unique_qualities:
 				text = text + qual +','
-
-		        #pDialog.update(percent, text)
-			#if pDialog.iscanceled(): 
-		        #        pDialog.close()
-		        #        break
+				if go:
+					pDialog.update(percent, text)
+					if pDialog.iscanceled(): 
+						pDialog.close()
+		        		break
 
 			if d['is_ready']=='0':
 				continue
@@ -259,8 +264,8 @@ def SearchDialog(type,title,year,season,number):
 		else:
 			pass
 
-		
-	#pDialog.close()
+	if go:	
+		pDialog.close()
 
 	if len(quality_options)==0 and len(unquality_options)>0:
 		dialog = xbmcgui.Dialog()	
@@ -391,6 +396,8 @@ def filebyfile(id,dirname,title,year,season,number):
 
 		#print 'Dir:{0}'.format(dirname)
 		files = furklib.fileInfo(id)
+		if not files:
+			return
 
 		for f in files:
 			name = f['name']

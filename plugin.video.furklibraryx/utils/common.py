@@ -290,8 +290,14 @@ def createMovieListItemTrakt(movie, movietitle = None,movieyear = None, totalIte
 	return xbmcplugin.addDirectoryItem(handle=int(sys.argv[1]), url=url, listitem=li, isFolder=False, totalItems = totalItems)
 
 def createShowListItemTrakt(show, totalItems = 10,season =1,episode=1):
+	fullywatched = False
 	if show:
-		showtitle = show['title']
+		if season==0 and episode==0:
+			showtitle = show['title'] + ' (Fully watched)'
+			fullywatched = True
+			season,episode = 1,1
+		else:
+			showtitle = show['title']
 		tvdbid = show['tvdb_id']
 	else:
 		tvdbid = None
@@ -306,10 +312,13 @@ def createShowListItemTrakt(show, totalItems = 10,season =1,episode=1):
 	li = xbmcgui.ListItem(text)
 
 	if tvdbid and season==1 and episode==1: 
-	        cm = [( "Mark Show as seen", "XBMC.RunPlugin(%s?action=trakt_SetShowSeen&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid), ) ,  ( "Dismiss show", "XBMC.RunPlugin(%s?action=trakt_DismissShow&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid), ) ,  ( "Add show to watchlist", "XBMC.RunPlugin(%s?action=trakt_AddShowtoWatchlist&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid), ) ]
+			if fullywatched:
+				cm = [( "Dismiss show", "XBMC.RunPlugin(%s?action=trakt_DismissShow&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid), ) ,  ( "Add show to watchlist", "XBMC.RunPlugin(%s?action=trakt_AddShowtoWatchlist&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid),) ]
+			else:
+				cm = [( "Mark Whole Show as seen", "XBMC.RunPlugin(%s?action=trakt_SetShowSeen&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid), ) , ( "Mark Episode as seen", "XBMC.RunPlugin(%s?action=trakt_SetShowSeen&tvdbid=%s&season=%s&episode=%s)" % ( sys.argv[ 0 ], tvdbid,season,episode), ) ,  ( "Dismiss show", "XBMC.RunPlugin(%s?action=trakt_DismissShow&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid), ) ,  ( "Add show to watchlist", "XBMC.RunPlugin(%s?action=trakt_AddShowtoWatchlist&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid),) ]
 	
 	elif tvdbid: 
-	        cm = [( "Watch previous episode - beta", "XBMC.RunPlugin(%s?action=SearchMe&go=now&type=Show&title=%s&season=%s&episode=%s&tvdbid=%s)" % ( sys.argv[ 0 ], show['title'],season,episode-1,tvdbid), ) , ( "Mark Episode as seen", "XBMC.RunPlugin(%s?action=trakt_SetShowSeen&tvdbid=%s&season=%s&episode=%s)" % ( sys.argv[ 0 ], tvdbid,season,episode), ) ,  ( "Dismiss show", "XBMC.RunPlugin(%s?action=trakt_DismissShow&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid), ) ,  ( "Add show to watchlist", "XBMC.RunPlugin(%s?action=trakt_AddShowtoWatchlist&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid), ) ]
+	       	cm = [( "Watch previous episode - beta", "XBMC.RunPlugin(%s?action=SearchMe&go=now&type=Show&title=%s&season=%s&episode=%s&tvdbid=%s)" % ( sys.argv[ 0 ], show['title'],season,episode-1,tvdbid), ) , ( "Mark Episode as seen", "XBMC.RunPlugin(%s?action=trakt_SetShowSeen&tvdbid=%s&season=%s&episode=%s)" % ( sys.argv[ 0 ], tvdbid,season,episode), ) ,  ( "Dismiss show", "XBMC.RunPlugin(%s?action=trakt_DismissShow&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid), ) ,  ( "Add show to watchlist", "XBMC.RunPlugin(%s?action=trakt_AddShowtoWatchlist&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid), ) ]
 
         li.addContextMenuItems( cm, replaceItems=False )
 	if show:

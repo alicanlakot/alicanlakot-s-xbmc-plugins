@@ -298,3 +298,9 @@ def getProgress():
         print("Error in request from 'getProgress()'")
     return data
 
+def getList(user,slug):
+	data = traktJsonRequest('GET', '/user/list.json/%%API_KEY%%/{0}/{1}'.format(user,slug))
+	if data == None:
+		print("Error in request from 'getList()'")
+	return data
+	
