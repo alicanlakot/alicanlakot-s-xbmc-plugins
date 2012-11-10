@@ -8,7 +8,7 @@
 				name="alicanlakot's repo">
 		<info compressed="false">https://github.com/alicanlakot/alicanlakot-s-xbmc-plugins/raw/master/addons.xml</info>
 		<checksum>https://github.com/alicanlakot/alicanlakot-s-xbmc-plugins/raw/master/addons.xml</checksum>
-		<datadir zip="true">https://github.com/alicanlakot/alicanlakot-s-xbmc-plugins/raw/master/repo</datadir>
+		<datadir zip="true">https://github.com/alicanlakot/alicanlakot-s-xbmc-plugins/raw/master/repo/</datadir>
 	</extension>
 	<extension point="xbmc.addon.metadata">
 		<summary>Install alicanlakot's repo</summary>
