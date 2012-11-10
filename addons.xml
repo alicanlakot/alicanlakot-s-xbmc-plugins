@@ -1,27 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <addons>
-<addon id="plugin.video.furklibrary" version="1.0.8" name="Furk.net BitTorrent Proxy Lib (old)" provider-name="alicanlakot">
-	<requires/>
-	<extension point="xbmc.python.pluginsource"
-	           library="default.py">
-		<provides>video</provides>
+<addon	id="repository.alicanlakot.addons"
+		name="alicanlakot's repo"
+		version="1.0.2"
+		provider-name="alicanlakot">
+	<extension	point="xbmc.addon.repository"
+				name="alicanlakot's repo">
+		<info compressed="false">https://github.com/alicanlakot/alicanlakot-s-xbmc-plugins/raw/master/addons.xml</info>
+		<checksum>https://github.com/alicanlakot/alicanlakot-s-xbmc-plugins/raw/master/addons.xml</checksum>
+		<datadir zip="false">https://github.com/alicanlakot/alicanlakot-s-xbmc-plugins/raw/master/</datadir>
 	</extension>
 	<extension point="xbmc.addon.metadata">
-		<summary>
-			Scrapes video torrents from 'My Files :: Finished' into your library. Check www.furk.net/text/mc for more info.
-	   	</summary>
-		<description>
-This is not longer supported, please download Furk Library 2 from alicanlakot's repository.
-		</description>
+		<summary>Install alicanlakot's repo</summary>
+		<description>Download and install alicanlakot's repo</description>
+		<disclaimer></disclaimer>
 		<platform>all</platform>
-		<minversion>29000</minversion>
-		<disclaimer>
-			You must have a premium account (9 euros per month, 200GB limit) at www.furk.net for this addon to function.
-		</disclaimer>
 	</extension>
 </addon>
-<?xml version="1.0" encoding="UTF-8"?>
-<addon id="plugin.video.furklibraryx" version="1.3.0" name="Furk.net Library 2" provider-name="alicanlakot">
+<addon id="plugin.video.furklibraryx" version="1.3.1" name="Furk.net Library 2" provider-name="alicanlakot">
 	<requires>
 		<import addon="script.module.beautifulsoup" version="3.0.8"/>
 		<import addon="xbmc.python" version="2.0"/>

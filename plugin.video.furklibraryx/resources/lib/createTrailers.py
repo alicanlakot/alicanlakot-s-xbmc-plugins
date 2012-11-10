@@ -24,7 +24,7 @@ def getReco(channel):
 		return refresh
 	count= 0
 	updateDialog = xbmcgui.DialogProgress()
-        updateDialog.create("FurkTrailers", "Receiving Movies from trakt")
+	updateDialog.create("FurkTrailers", "Receiving Movies from trakt")
 	updateDialog.update(25, "Recommended", "Total: " + str(count))
 	reco = traktlib.getRecommendedMoviesFromTrakt() 
 	count = count + len(reco)

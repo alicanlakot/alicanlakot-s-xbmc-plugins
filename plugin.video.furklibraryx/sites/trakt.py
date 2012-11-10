@@ -177,8 +177,11 @@ def displayList(user,slug):
 	movies = []
 	for item in myList['items']:
 		if item['type']=="movie":
-			movies.append(item['movie'])
+			myMovie = item['movie']
+			myMovie['watched']=item['watched']
+			movies.append(myMovie)
 	for movie in movies:
+		print movie['watched']
 		common.createMovieListItemTrakt(movie,totalItems = len(movies))
 	common.endofDir()
 	return
