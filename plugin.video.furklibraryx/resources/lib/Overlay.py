@@ -272,15 +272,13 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         
         
         if action == ACTION_SELECT_ITEM:
-            if self.showingInfo and self.infoOffset <> 0:       
+            if self.showingInfo and self.infoOffset<>0:
                 position = xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition() + self.infoOffset
-
-            if self.showingInfo:
+                item = self.getListItem(position)
+                print 'pos:' + str(position) + 'title:' + item['title']
                 self.hideInfo()
-                print 'pos:' + str(position)
-                self.infoOffset = 0
                 self.Player.playselected(position)
-                
+
             else:
                 self.Player.pause()
                 position = xbmc.PlayList(xbmc.PLAYLIST_MUSIC).getposition()
@@ -331,6 +329,8 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         elif action == ACTION_MOVE_RIGHT:
             self.infoOffset += 1
             self.showInfo(10.0)
+        elif action == ACTION_STOP:
+            self.end()
         elif action in ACTION_PREVIOUS_MENU:
             if self.showingInfo:
                 self.hideInfo()
@@ -446,8 +446,9 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
             self.lastPlaylistPosition = xbmc.PlayList(xbmc.PLAYLIST_MUSIC).getposition()
             self.notPlayingCount = 0
         else:
-            self.end()
             self.notPlayingCount += 1
+            if self.notPlayingCount > 5:
+                self.end()
             
 
         if self.Player.stopped == False:
