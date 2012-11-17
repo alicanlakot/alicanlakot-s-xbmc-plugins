@@ -29,11 +29,4 @@ __settings__   = xbmcaddon.Addon(id='plugin.video.furklibraryx')
 __cwd__        = __settings__.getAddonInfo('path')
 
 
-# Adapting a solution from ronie (http://forum.xbmc.org/showthread.php?t=97353)
-if xbmcgui.Window(10000).getProperty("FurkTrailersRunning") != "True":
-    xbmcgui.Window(10000).setProperty("FurkTrailersRunning", "True")    
-    shouldrestart = False
-
-    xbmc.executebuiltin('RunScript("' + __cwd__ + '/trailersctrl.py' + '")')
-else:
-    xbmc.log('FurkTrailers - Already running, exiting', xbmc.LOGERROR)
+xbmc.executebuiltin('RunScript("' + __cwd__ + '/trailersctrl.py' + '")')

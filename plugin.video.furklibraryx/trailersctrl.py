@@ -43,20 +43,6 @@ import resources.lib.Overlay as Overlay
 
 MyOverlayWindow = Overlay.TVOverlay("script.pseudotv.TVOverlay.xml", __cwd__, "default")
 
-for curthread in threading.enumerate():
-    try:
-        log("Active Thread: " + str(curthread.name), xbmc.LOGERROR)
-
-        if curthread.name != "MainThread":
-            try:
-                curthread.join()
-            except:
-                pass
-
-            log("Joined " + curthread.name)
-    except:
-        pass
-
 del MyOverlayWindow
 xbmcgui.Window(10000).setProperty("FurkTrailersRunning", "False")
 
