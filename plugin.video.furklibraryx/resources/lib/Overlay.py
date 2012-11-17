@@ -177,7 +177,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
             self.getControl(502).setLabel('NOW WATCHING:')
             
         
-        position = xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition() + self.infoOffset
+        
         print 'Akin' + str(position)
         
         item = self.getListItem(position)
@@ -405,13 +405,13 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
                 if not self.showingInfo:
                     self.infoOffset = 0
                     self.showInfo(5.0)
-                    settings.setSetting('last_trailer', str(xbmc.PlayList(xbmc.PLAYLIST_MUSIC).getposition()))
+                    settings.setSetting('last_trailer', str(xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition()))
 
 
             if self.notificationLastChannel != self.currentChannel:
                 docheck = True
             else:
-                if self.notificationLastShow != xbmc.PlayList(xbmc.PLAYLIST_MUSIC).getposition():
+                if self.notificationLastShow != xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition():
                     docheck = True
                 else:
                     if self.notificationShowedNotif == False:
@@ -419,7 +419,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
 
             if docheck == True:
                 self.notificationLastChannel = self.currentChannel
-                self.notificationLastShow = xbmc.PlayList(xbmc.PLAYLIST_MUSIC).getposition()
+                self.notificationLastShow = xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition()
                 self.notificationShowedNotif = False
 
                 timedif = self.Player.getTotalTime() - self.Player.getTime()
@@ -443,7 +443,7 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         if self.Player.isPlaying():
              
             self.lastPlayTime = int(self.Player.getTime())
-            self.lastPlaylistPosition = xbmc.PlayList(xbmc.PLAYLIST_MUSIC).getposition()
+            self.lastPlaylistPosition = xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition()
             self.notPlayingCount = 0
         else:
             self.notPlayingCount += 1
