@@ -201,9 +201,19 @@ def SearchDialog(type,title,year,season,number,go=False):
 		tv_show_episode = "%s %s" % (title, season_episode)
 
 		dirs2 = []
-		dirs2.extend(furklib.searchFurk(tv_show_episode))
-	        dirs2.extend(furklib.searchFurk(tv_show_season))
-		dirs2.extend(furklib.searchFurk(title)) 
+		try:
+			dirs2.extend(furklib.searchFurk(tv_show_episode))
+		except:
+			pass
+		try:
+			dirs2.extend(furklib.searchFurk(tv_show_season))
+		except:
+			pass
+		try:
+			dirs2.extend(furklib.searchFurk(title))
+		except:
+			pass
+		 
 	        #files = remove_list_duplicates(files)
 
 		# dirs2 = files
