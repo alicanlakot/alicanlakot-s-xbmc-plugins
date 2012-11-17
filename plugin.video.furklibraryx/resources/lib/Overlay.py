@@ -157,8 +157,10 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         myPl = PLAYLIST_PATH + str(channel) + '.m3u'
         #xbmc.executebuiltin('PlayMedia(' + content[1] + ')')
         xbmc.PlayList(xbmc.PLAYLIST_MUSIC).load(myPl)
-        xbmc.PlayList(xbmc.PLAYLIST_MUSIC).shuffle()        
-        xbmc.Player().play()
+        xbmc.PlayList(xbmc.PLAYLIST_MUSIC).shuffle()
+        #xbmc.Player().play()
+                
+        xbmc.Player().playselected(int(self.currentIdx))
         #xbmc.PlayList(1).load(myPl)
         #self.Player.play(myPl)
   
