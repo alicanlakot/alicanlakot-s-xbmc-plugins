@@ -48,15 +48,14 @@
 			</control>
 		
 			<control type="grouplist">
-				<posx>420</posx>
+				<posx>220</posx>
 				<posy>450</posy>
-				<width>810</width>
+				<width>600</width>
 				<orientation>vertical</orientation>
 				<itemgap>4</itemgap>
 			
 				<control type="label" id="502">
 					<description>Label Now Playing</description>
-					<width>810</width>
 					<height>20</height>
 					<font>font13_title</font>
 					<textcolor>blue</textcolor>
@@ -65,7 +64,6 @@
 			
 				<control type="label" id="503">
 					<description>Label Show Title</description>
-					<width>810</width>
 					<height>30</height>
 					<font>font24_title</font>
 					<textcolor>white</textcolor>
@@ -74,7 +72,6 @@
 				
 				<control type="label" id="504">
 					<description>Label Show Title</description>
-					<width>810</width>
 					<height>20</height>
 					<font>font13</font>
 					<textcolor>blue</textcolor>
@@ -83,8 +80,8 @@
 
 				<control type="label" id="505">
 					<description>Label Show Description</description>
-					<width>810</width>
-					<height>300</height>
+					<height>400</height>
+					<width>400</width>
 					<font>font13</font>
 					<textcolor>grey</textcolor>
 					<shadowcolor>black</shadowcolor>
@@ -98,11 +95,10 @@
 			
 			<control type="image" id="506">
 				<description>Show Channel Icon</description>
-				<posx>75</posx>
-				<posy>300</posy>
-				<width>300</width>
-				<height>400</height>
-				<aspectratio>scale</aspectratio>
+				<posx>0</posx>
+				<posy>100</posy>
+				<width>150</width>
+				<aspectratio>keep</aspectratio>
 			</control>
 			
 			<control type="progress">
