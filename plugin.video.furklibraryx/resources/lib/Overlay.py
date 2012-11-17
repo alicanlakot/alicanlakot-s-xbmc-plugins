@@ -273,15 +273,12 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         
         if action == ACTION_SELECT_ITEM:
             if self.showingInfo and self.infoOffset <> 0:       
-                try:
-                    position = xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition() + self.infoOffset
-                    
-                except:
-                    position = 0 
-                    
+                position = xbmc.PlayList(xbmc.PLAYLIST_VIDEO).getposition() + self.infoOffset
+
             if self.showingInfo:
                 self.hideInfo()
                 print 'pos:' + str(position)
+                self.infoOffset = 0
                 self.Player.playselected(position)
                 
             else:
