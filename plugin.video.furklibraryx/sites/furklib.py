@@ -65,21 +65,20 @@ def furkJsonRequest(method, req, args={}, returnStatus=False, anon=False, conn=F
     response = conn.getresponse()
    
     raw = response.read()
-
     try:
-	data = json.loads(raw)
+	   data = json.loads(raw)
     except:
-	data = None
+	   data = None
     if data == None:
-	return None
+	   return None
     if 'status' in data:
         if data['status'] == 'error':
             print("traktQuery: Error: " + str(data['error']))
             if returnStatus:
-                return data;
+                return data
             if not silent: notification("Furk Library", str(data['error'])) # Error
 	    login(settings.getSetting('furk_login'),settings.getSetting('furk_password'))
-            return None
+            return data
 
     return data
 
@@ -96,16 +95,44 @@ def searchFurk(query):
     except:
 	return None
 
-def myFiles():
-    data = furkJsonRequest('GET', 'file/get?api_key=%%API_KEY%%')
+
+def myFeeds():
+    data = furkJsonRequest('GET', 'feed/get?api_key=%%API_KEY%%')
     
     if data == None:
         print("Error in request from 'searchFurk'")
-	return None
+        return None
+    try:    
+        return data
+    except:
+        return None
+
+def addFeed(name):
+    name = format(urllib.quote(name))
+    data = furkJsonRequest('GET', 'feed/add?api_key=%%API_KEY%%&name={0}&url={0}'.format(name))
+    if data == None:
+        print("Error in request from 'searchFurk'")
+        return None
+    try:    
+        return data
+    except:
+        return None
+
+    
+def myFiles(name=None):
+    if not name:
+        data = furkJsonRequest('GET', 'file/get?api_key=%%API_KEY%%')
+    else:
+        name = urllib.quote(name)
+        data = furkJsonRequest('GET', 'file/get?api_key=%%API_KEY%%&name_like={0}'.format(name))
+    
+    if data == None:
+        print("Error in request from 'searchFurk'")
+        return None
     try:	
         return data['files']
     except:
-	return None
+        return None
 
 
 

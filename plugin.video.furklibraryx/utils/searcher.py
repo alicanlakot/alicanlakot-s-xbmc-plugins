@@ -82,6 +82,7 @@ def SearchDialog(type,title,year,season,number,go=False):
 
 		query = '''{0} S{1:0>2}E{2:0>2}'''.format(title, season, number)
 		dirs = furklib.searchFurk(query)
+		
 	else:
 		query = title
 		dirs = furklib.searchFurk(title)
@@ -94,7 +95,7 @@ def SearchDialog(type,title,year,season,number,go=False):
 		pDialog = xbmcgui.DialogProgress()
 		pDialog.create('Searching for files')
 	count = 0
-
+	
 	if dirs:
 		for file in dirs:
 			count = count + 1
@@ -201,6 +202,7 @@ def SearchDialog(type,title,year,season,number,go=False):
 		tv_show_episode = "%s %s" % (title, season_episode)
 
 		dirs2 = []
+		dirs2.extend(furklib.myFiles(title))
 		try:
 			dirs2.extend(furklib.searchFurk(tv_show_episode))
 		except:

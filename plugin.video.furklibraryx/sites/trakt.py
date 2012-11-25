@@ -1,5 +1,5 @@
 from utils import common
-from sites import traktlib
+from sites import traktlib, furklib
 import datetime,sys,time
 import xbmcgui,xbmc
 import sys
@@ -319,7 +319,33 @@ def traktAction(params):
 			common.createListItem('Filter by Genre', True, url)
 			displayRecommendedShows(genre)
 
-		
+	elif(params['action'] == 'trakt_listfeeds'):
+			myfeeds = furklib.myFeeds()['feeds']
+			myfeeds = sorted(myfeeds,key=lambda feed: feed['name'])
+			url = sys.argv[0]+'?action=trakt_addfeeds' 
+			common.createListItem('Add Feeds from trakt', True, url)
+			for feed in myfeeds:
+				url = sys.argv[0]+'?action=trakt_MovieGenres' 
+				common.createListItem(feed['name'], True, url)
+			common.endofDir()
+	
+	elif(params['action'] == 'trakt_addfeeds'):
+			myfeeds = furklib.myFeeds()['feeds']
+			shows = traktlib.getWatchlistShowsfromTrakt()
+			progress = traktlib.getProgress()
+			series = []
+			for current in progress:
+				series.append(current['show'])
+			shows = shows + series
+			for show in shows:
+				check = [feed for feed in myfeeds if feed['name'] == show['title']]
+				if len(check)==0:
+					furklib.addFeed(show['title'])
+					url = sys.argv[0]+'?action=trakt_MovieGenres' 
+					common.createListItem(show['title'], False, '')
+			common.endofDir()
+			
+	
 
 	elif(params['action'] == 'trakt_RecommendedMovies'):
 		try:
@@ -388,7 +414,9 @@ def traktAction(params):
 
 def displayTraktMenu():
 	
-	url = sys.argv[0]+'?action=' 
+	url = sys.argv[0]+'?action='
+	common.createListItem('--------------FEEDS------------------', False, '')
+	common.createListItem('List my feeds', True, url+'trakt_listfeeds')
 	common.createListItem('--------------MOVIES------------------', False, '')
 	common.createListItem('Recommended Movies', True, url+'trakt_RecommendedMovies')
 	common.createListItem('Trending Movies', True, url +'trakt_TrendingMovies')
