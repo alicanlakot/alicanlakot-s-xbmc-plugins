@@ -1,4 +1,4 @@
-from utils import common
+from utils import common,settings
 from sites import traktlib, furklib
 import datetime,sys,time
 import xbmcgui,xbmc
@@ -6,43 +6,65 @@ import sys
 from utils import settings
 
 def addToXbmcLib(fg = None):
-	totalAdded=0
-	if fg == 'True':
-		common.Notification('Getting:','Trending')	
-	movies = traktlib.getTrendingMoviesFromTrakt()
-	if movies:
-		for movie in movies:
-			if not movie['watched'] and movie['watchers']>1:
-				totalAdded = totalAdded + common.createMovieStrm(movie['title'],movie['year'],movie['imdb_id'])
-			        common.createMovieNfo(movie['title'],movie['year'],movie['imdb_id'])
+    totalAdded=0
+    if settings.getSetting("auto_addImdb"):
+        imdbmovies = imdb.watchlist_movies(url,0)
+        traktlib.addMoviestoWatchlist(imdbmovies)
+        imdbshows = imdb.watchlist_shows(url,0)
+        traktlib.addShowstoWatchlist(imdbshows)
 
-	if fg == 'True':
-		common.Notification('Getting:','Recommended')	
-	movies = traktlib.getRecommendedMoviesFromTrakt()
-	if movies:
-	    for movie in movies:
-		totalAdded = totalAdded + common.createMovieStrm(movie['title'],movie['year'],movie['imdb_id'])
-	        common.createMovieNfo(movie['title'],movie['year'],movie['imdb_id'])
-	if fg == 'True':
-		common.Notification('Getting:','Watchlist Movies')	
-	movies = traktlib.getWatchlistMoviesFromTrakt()
-	for movie in movies:
-		totalAdded = totalAdded + common.createMovieStrm(movie['title'],movie['year'],movie['imdb_id'])
-	        common.createMovieNfo(movie['title'],movie['year'],movie['imdb_id'])
-
-
-	if fg == 'True':
-		common.Notification('Getting:','Calendar Shows')	
-	d = datetime.date.today() + datetime.timedelta(days=-8)
-	currentdate = d.strftime('%Y%m%d')
-	series = traktlib.getShowsCalendarFromTrakt(currentdate)
-	for show in series:
-	    episodes = show['episodes']
     
-	    for episode in episodes:
-		myepisode = episode['episode']
-	        myshow = episode['show']
-		totalAdded = totalAdded + common.createShowStrm(myshow['title'],myepisode['season'],myepisode['number'],myshow['tvdb_id'])
+	if settings.getSetting("add_trending"):
+	    	if fg == 'True':
+    			common.Notification('Getting:','Trending')	
+	    	movies = traktlib.getTrendingMoviesFromTrakt()
+    		if movies:
+    			for movie in movies:
+    				if not movie['watched'] and movie['watchers']>1:
+    					totalAdded = totalAdded + common.createMovieStrm(movie['title'],movie['year'],movie['imdb_id'])
+    					common.createMovieNfo(movie['title'],movie['year'],movie['imdb_id'])
+
+	
+	if settings.getSetting("add_recommended"):
+		if fg == 'True':
+			common.Notification('Getting:','Recommended')	
+		movies = traktlib.getRecommendedMoviesFromTrakt()
+		if movies:
+		    for movie in movies:
+			totalAdded = totalAdded + common.createMovieStrm(movie['title'],movie['year'],movie['imdb_id'])
+			common.createMovieNfo(movie['title'],movie['year'],movie['imdb_id'])
+	
+	if settings.getSetting("add_watchlistmovies"):
+		if fg == 'True':
+			common.Notification('Getting:','Watchlist Movies')	
+		movies = traktlib.getWatchlistMoviesFromTrakt()
+		for movie in movies:
+			totalAdded = totalAdded + common.createMovieStrm(movie['title'],movie['year'],movie['imdb_id'])
+			common.createMovieNfo(movie['title'],movie['year'],movie['imdb_id'])
+	
+	if settings.getSetting("add_watchlistshows"):
+		if fg == 'True':		
+			common.Notification('Getting:','Watchlist Shows')	
+		totalAdded = totalAdded + getWatchlistShows()
+	    
+	if fg == 'True':
+		common.Notification('Total:', str(totalAdded))
+	return totalAdded
+
+
+
+# 	if fg == 'True':
+# 		common.Notification('Getting:','Calendar Shows')	
+# 	d = datetime.date.today() + datetime.timedelta(days=-8)
+# 	currentdate = d.strftime('%Y%m%d')
+# 	series = traktlib.getShowsCalendarFromTrakt(currentdate)
+# 	for show in series:
+# 	    episodes = show['episodes']
+    
+# 	    for episode in episodes:
+# 		myepisode = episode['episode']
+# 	        myshow = episode['show']
+# 		totalAdded = totalAdded + common.createShowStrm(myshow['title'],myepisode['season'],myepisode['number'],myshow['tvdb_id'])
 	
 #	premieres= getPremieresCalendarFromTrakt(currentdate)
 #	for show in premieres:
@@ -54,13 +76,7 @@ def addToXbmcLib(fg = None):
 #		if season==1:
 #			totalAdded = totalAdded + common.createShowStrm(myshow,myepisode,myshow['tvdb_id'])
 
-	if fg == 'True':		
-		common.Notification('Getting:','Watchlist Shows')	
-	totalAdded = totalAdded + getWatchlistShows()
-	if fg == 'True':
-		common.Notification('Total:', str(totalAdded))
-	return totalAdded
-
+	
 
 
 def getWatchlistShows():
@@ -115,62 +131,29 @@ def displayRecommendedShows(genre):
 	common.endofDir()
 
 def displayProgress():
-	progress = traktlib.getProgress()
-	for current in progress:
-		lastseason = 100
-		lastepisode = 100
-		for season in current['seasons']:
-			seasonnumber = int(season['season'])
-			for episode in season ['episodes']:
-				if not season ['episodes'][episode]:
-					myseason,myepisode = seasonnumber,int(episode)
-					if myseason<lastseason:
-						lastseason = myseason
-						lastepisode = 100
-					if myseason==lastseason and myepisode<lastepisode:
-						lastepisode = myepisode
-					#print '{0} S{1} E{2} / S{3} E{4}'.format(current['show']['title'],myseason,myepisode,lastseason,lastepisode)
-
-		#print '{0} S{1} E{2}'.format(current['show']['title'],lastseason,lastepisode)
-		#break
-		if lastseason <>100:
-			common.createShowListItemTrakt(current['show'],len(progress),lastseason,lastepisode)
-	common.endofDir()
+    shows = calculateProgress()
+    for show in shows:
+        if show['season'] <>0:
+            common.createShowListItemTrakt(show['title'],len(shows),show['season'],show['episode'])
+    common.endofDir()
 
 
 def calculateProgress():
-	progress = traktlib.getProgress()
-	shows = {}
-	
-
-	progressByShow = {}
-	for current in progress:
-		lastseason = 100
-		lastepisode = 100
-		allwatched = False
-		if current['progress']['left']<>0:
-			for season in current['seasons']:
-				seasonnumber = int(season['season'])
-				for episode in season ['episodes']:
-					if not season ['episodes'][episode]:
-						myseason,myepisode = seasonnumber,int(episode)
-						if myseason<lastseason:
-							lastseason = myseason
-							lastepisode = 100
-						if myseason==lastseason and myepisode<lastepisode:
-							lastepisode = myepisode
-					#print '{0} S{1} E{2} / S{3} E{4}'.format(current['show']['title'],myseason,myepisode,lastseason,lastepisode)
-		else:
-			allwatched = True
-		#print '{0} S{1} E{2}'.format(current['show']['title'],lastseason,lastepisode)
-		#break
-		show = {}
-		if lastseason<>100:
-			shows[current['show']['title']]= (lastseason,lastepisode)
-		elif allwatched:
-			shows[current['show']['title']]= (0,0)
-		
-	return shows
+    progress = traktlib.getProgress()
+    shows = []
+    for current in progress:
+        showprogress = {}
+        if current['next_episode'] <> False :
+            lastseason = current['next_episode']['season']
+            lastepisode = current['next_episode']['num']
+        else:
+            lastseason = 0
+            lastepisode= 0
+        showprogress['title'] = current['show']['title']
+        showprogress['season'] = lastseason
+        showprogress['episode'] = lastepisode
+        shows.append(showprogress)
+    return shows
 
 def displayList(user,slug):
 	myList = traktlib.getList(user,slug)

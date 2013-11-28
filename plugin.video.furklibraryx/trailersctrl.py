@@ -29,7 +29,7 @@ from resources.lib.Globals import *
 __scriptname__ = "Furk Trailers"
 __author__     = "Alicanlakot"
 __url__        = "http://github.com/alicanlakot"
-__version__    = VERSION
+__version__    = '1.2.0'
 __settings__   = xbmcaddon.Addon(id='plugin.video.furklibraryx')
 __language__   = __settings__.getLocalizedString
 __cwd__        = __settings__.getAddonInfo('path')

@@ -3,6 +3,8 @@
 	<string id="20001">Login</string>
 	<string id="20002">Password</string>
 	<string id="20003">API Key</string>
+	<string id="20004">IMDB User</string>
+	<string id="20005">Auto add IMDB watchlist to trakt?</string>
     <!-- Megaupload -->
     <string id="30200">Use Megaupload account</string>
     <string id="30201">    Username</string>
@@ -23,5 +25,15 @@
     <string id="30601">    Update timer</string>
     <string id="30602">    Get new episodes from favorite TV shows</string>
     <string id="30603">    Get new movies</string>
+    <!-- Auto Update -->
+    <string id="40004">    Show notifications</string>
+    <string id="40001">    Add trending movies?</string>
+    <string id="40002">    Add recommended movies?</string>
+    <string id="40003">    Add watchlist movies?</string>
+    <string id="40004">    Add watchlist shows?</string>
+	<!- OneClick -->
+	<string id="50000">One Click?</string>
+	<string id="50001">	   Quality</string>
+	
 </strings>
 

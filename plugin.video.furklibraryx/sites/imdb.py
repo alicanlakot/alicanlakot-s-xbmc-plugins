@@ -1,44 +1,55 @@
 # 
 
 from xml.dom.minidom import parse, parseString
-import urllib2,sys,re
-import xbmcplugin
-from utils import common
-from BeautifulSoup import BeautifulSoup
+import urllib2,sys,re,urllib
+from utils import regex_from_to,regex_get_all,get_url
+
+def watchlist_imdb(url,start):
+    movies = []
+    try:
+        body = get_url(url, cache=".")
+    except:
+        print("IMDB URL request timed out")
+    all_tr = regex_get_all(body, '<tr data-item', '</tr>')
+     
+    for tr in all_tr:
+        all_td = regex_get_all(tr, '<td', 'td>')
+        imdb_id = regex_from_to(all_td[1], 'title/', '/')
+        name = regex_from_to(all_td[1], '/">', '</a>')
+        year = regex_from_to(all_td[2], 'year">', '</td>')
+        try:
+            rating = regex_from_to(all_td[6], 'user_rating">', '</')
+            votes = regex_from_to(all_td[7], 'num_votes">', '</')
+        except:
+            rating = ""
+            votes = ""
+        movies.append({'imdb_id': imdb_id, 'name': name, 'year': year, 'rating': rating, 'votes': votes})
+    p_start = int(start) + 250
+    p_end = (int(start) + (250 * 2)) -1
+    #movies.append({'imdb_id': str(pname), 'name': '[COLOR gold]' + "%s (%s-%s)" % (">>> Next Page",str(p_start),str(p_end)) + '[/COLOR]', 'year': "rem", 'rating': start, 'votes': "NW"})
+    return movies
 
 
-def getImdbtop250(page):
+def watchlist_movies(watchlist_url,start):
+    params = {}
+    nstart = str(int(start) + 250)
+    params["title_type"] = "feature,documentary,tv_movie"
+    params["start"] = start
+    params["view"] = 'compact'
+    url = "%s%s%s" % (watchlist_url, urllib.urlencode(params),"&sort=listorian:asc")
+    movies = watchlist_imdb(url,start)
+    return movies
+	
+def watchlist_shows(watchlist_url,start):
+    params = {}
+    nstart = str(int(start) + 250)
+    params["title_type"] = "tv_series,mini_series,tv_special"
+    params["start"] = start
+    params["view"] = 'compact'
+    url = "%s%s%s" % (watchlist_url, urllib.urlencode(params),"&sort=listorian:asc")
+    tv_shows = watchlist_imdb(url,start)
+    return tv_shows
 
-        response = urllib2.urlopen('http://www.imdb.com/chart/top')
-	html = response.read()
-	entries = re.findall(r'<tr bgcolor="#(?:e5e5e5|ffffff)" valign="top"><td align="right"><font face="Arial, Helvetica, sans-serif" size="-1"><b>(\d{1,3})\.</b></font></td><td align="center"><font face="Arial, Helvetica, sans-serif" size="-1">(\d\.\d)</font></td><td><font face="Arial, Helvetica, sans-serif" size="-1"><a href="/title/tt(\d{7})/">([^<]+)</a> \((\d{4})\)</font></td><td align="right"><font face="Arial, Helvetica, sans-serif" size="-1">(\d{1,3}(?:,\d{3})*)</font></td></tr>', html)
-	page = int(page)
-	first = page-1
-	pagesize = 25
-        for entry in entries[first*pagesize:page*pagesize]:
-		number, score, link_number, title, year, votes = entry
-		s= '#{0}: {1} r:{2}'.format(number,'{0}',score)
-		common.createMovieListItemfromimdbid(link_number,pagesize,s)
-	url = sys.argv[0]+'?action=imdbTop250&page=' + str(page+1)
-	if page*pagesize < 250:
-		common.createListItem('Next ' + str(pagesize),True, url )
-	common.endofDir()
-        return 
-
-def getImdbRentals():
-	entries = getImdbRentalsList()
-	for entry in entries:
-		link_number,title,year = entry
-		common.createMovieListItemfromimdbid(link_number,len(entries))
-	common.endofDir()
-        return 
-
-def getImdbRentalsList():
-	response = urllib2.urlopen('http://www.imdb.com/boxoffice/rentals')
-	html = response.read()
-	#entries = re.findall(r'<tr align=right><td><b>(\d{1,3})</b>\.</td><td align=center>(\d{1,3})</td><a href="/title/tt(\d{7})/">([^<]+)</a> \((\d{4})\)</b></td><td>(\d{1,3}(?:,\d{3})*)</td></tr>', html)
-	entries = re.findall(r'<td align=left><b><a href="/title/tt(\d{7})/">([^<]+)</a> \((\d{4})\)</b></td>',html)
-        return entries
 
 
 

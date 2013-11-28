@@ -12,11 +12,14 @@ quality_options = []
 quality_urls = []
 quality_cleanname =[]
 quality_ids =[]
+quality_values =[]
 unquality_options = []
 unquality_urls = []
 unquality_cleanname =[]
 unquality_ids =[]
+unquality_values =[]
 unique_qualities = []
+
 
 
 def SearchFromMenu(query):
@@ -57,10 +60,12 @@ def SearchDialog(type,title,year,season,number,go=False):
 	global quality_urls
 	global quality_cleanname 
 	global quality_ids
+	global quality_values
 	global unquality_options
 	global unquality_urls
 	global unquality_cleanname
 	global unquality_ids
+	global unquality_values
 	global unique_qualities
 
 	if go:
@@ -147,11 +152,12 @@ def SearchDialog(type,title,year,season,number,go=False):
 					if valid:
 						#Notification('Quality:',str(myquality))
 						quality_options.append('[' + mysize + '] '+str(myquality) + ' ' + dirname)
+						quality_values.append(myquality.value)
 						quality_ids.append(file['info_hash'])
 						quality_cleanname.append(dirname)
 						quality_urls.append(None)
-						if not str(myquality) in unique_qualities:
-							unique_qualities.append(str(myquality))
+						if not myquality in unique_qualities:
+							unique_qualities.append(myquality)
 				else:
 					# Notification ('cannot parse' , dirname)
 					continue
@@ -180,13 +186,15 @@ def SearchDialog(type,title,year,season,number,go=False):
 
 				if valid:
 					quality_options.append('[' + mysize + '] '+ movie_name)
+					quality_values.append(myquality.value)
 					quality_cleanname.append(dirname)
 					quality_ids.append(file['info_hash'])
-					if not str(myquality) in unique_qualities:
-						unique_qualities.append(str(myquality))
+					if not myquality in unique_qualities:
+						unique_qualities.append(myquality)
 					
 				else:
 					unquality_options.append(str(myquality) + ' ' + dirname)
+					unquality_values.append(myquality.value)
 					unquality_ids.append(file['info_hash'])
 					unquality_cleanname.append(dirname)
 
@@ -278,20 +286,42 @@ def SearchDialog(type,title,year,season,number,go=False):
 
 	if go:	
 		pDialog.close()
+		
+	oneclick = settings.getSetting("oneclick")
 
 	if len(quality_options)==0 and len(unquality_options)>0:
+		oneclick = False
 		dialog = xbmcgui.Dialog()	
 		dialog.ok("Error", "Nothing of good quality", "Making a similar search" )	
 		quality_options = unquality_options
 		quality_cleanname = unquality_cleanname
 		quality_urls = unquality_urls
 		quality_ids= unquality_ids
+		quality_values = unquality_values
 	
-
-        if len(quality_options) > 1 :       
-		dialog = xbmcgui.Dialog()	
-		quality_select = dialog.select('Select quality', quality_options)
-	elif len(quality_options)==1:
+	if len(quality_options) > 1 :       
+		if oneclick:
+	            quality_select = -1
+	            j,k = getQualitysetting()
+    		    best_quality = 0
+		    i = 0
+	            for myoption in quality_options:
+		        if quality_values[i] >= j and quality_values[i] < k:
+			    quality_select= i
+	                    break
+			else:
+				if quality_values[i] > best_quality and quality_values[i] < j:
+					best_quality = quality_values[i]
+					quality_select = i
+	            i= i + 1
+        
+		if quality_select == -1:        
+			dialog = xbmcgui.Dialog()	
+	                dialog.ok("Error", "Nothing of one click quality", "Please select yourself" )	
+		        dialog = xbmcgui.Dialog()
+			quality_select = dialog.select('Select quality', quality_options)
+            
+	elif len(quality_options) == 1:
 		common.Notification('Found only:',quality_options[0].split(' ',1)[0])
 		quality_select = 0
 	else:
@@ -451,13 +481,15 @@ def filebyfile(id,dirname,title,year,season,number):
 	
 			if valid:
 				quality_options.append('[' + mysize + '] '+str(myquality) + ' ' + name)
+				quality_values.append(myquality.value)
 				quality_cleanname.append(clean_name)
 				quality_urls.append(play_url)
-				if not str(myquality) in unique_qualities:
-					unique_qualities.append(str(myquality))
+				if not myquality in unique_qualities:
+					unique_qualities.append(myquality)
 				break
 			else:
 				unquality_options.append('[' + mysize + '] '+movie_name)
+				unquality_values.append(myquality.value)
 				unquality_cleanname.append(movie_name)
 				unquality_urls.append(play_url)
 		return

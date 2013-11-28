@@ -47,6 +47,7 @@ try:
 except:
 	MYCONTEXT = 'video'
 
+IMDB_WATCHLIST = "http://akas.imdb.com/user/" + settings.getSetting("imdb_watchlist") + "/watchlist?"
 
 from utils import searcher
 from utils import common
@@ -223,7 +224,7 @@ elif(params['action'] == 'scrapeMovie'):
 	year = params['year']
 	common.createMovieStrm(title,year,MOVIES_PATH)
 	common.Notification ('Added to library:',title)
-	xbmc.executebuiltin('UpdateLibrary(video)')
+	xbmc.executebuiltin('Library(video)')
 
 elif(params['action'] == 'Trailers'):
 	#xbmc.executebuiltin("XBMC.RunScript(special://home/addons/script.furktrailers/default.py)")
@@ -313,12 +314,8 @@ elif(params['action'].startswith('music_')):
 
 
 elif(params['action'] == 'traktlib'):
-	try:
-		fg = params['fg']
-	except:
-		fg = 'True'
-	totalAdded = trakt.addToXbmcLib(fg)
-	totalAdded += imdb.addImdbToLib(fg)
+	totalAdded = trakt.addToXbmcLib()
+	#totalAdded += imdb.addImdbToLib(fg)
 
 	if totalAdded>0:
 		common.Notification('Furk-Trakt', '{0} were added'.format(totalAdded))

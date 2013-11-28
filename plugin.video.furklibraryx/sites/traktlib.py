@@ -130,6 +130,19 @@ def addShowtoWatchList(tvdbid):
 	    print("Error in request from 'getWatchlistMoviesFromTrakt()'")
     return data
 
+def addShowstoWatchList(imdbList):
+    args = {}
+    shows = []
+    for imdbShow in imdbList:
+        show = {}
+        show['imdb_id'] = imdbShow['imdb_id']
+        shows.append(show)
+    args['shows'] = shows
+    data = traktJsonRequest('POST', '/show/watchlist/%%API_KEY%%' ,args)
+    if data == None:
+	    print("Error in request from 'addShowstoWatchList()'")
+    return data
+
 def addMovietoWatchlist(imdbid):
     args = {}
     movies = []
@@ -141,6 +154,20 @@ def addMovietoWatchlist(imdbid):
     if data == None:
 	    print("Error in request from 'addMovietoWatchlist()'")
     return data
+
+def addMoviestoWatchlist(imdbList):
+    args = {}
+    movies = []
+    movie = {}
+    for imdbMovie in imdbList:
+        movie['imdb_id'] = imdbMovie['imdb_id']
+        movies.append(movie)
+    args['movies'] = movies
+    data = traktJsonRequest('POST', '/movie/watchlist/%%API_KEY%%' ,args)
+    if data == None:
+	    print("Error in request from 'addMovietoWatchlist()'")
+    return data
+
 
 def removeMoviefromWatchlist(imdbid):
     args = {}
@@ -292,7 +319,7 @@ def getEpisodeInfo(tvdbid,season,episode):
 def getProgress():
     args = {}
     #args['sort'] = 'activity'
-    args['extended'] = 'normal'
+    #args['extended'] = 'normal'
     data = traktJsonRequest('GET', '/user/progress/watched.json/%%API_KEY%%/%%USERNAME%%/all/activity/normal')
     if data == None:
         print("Error in request from 'getProgress()'")
