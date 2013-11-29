@@ -2,7 +2,6 @@ import json
 import httplib
 import datetime
 import os
-import xbmc
 import urllib
 import urllib2
 from xml.dom.minidom import Document
@@ -15,12 +14,8 @@ headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/
 
 
 # get a connection to trakt
-def getTraktConnection():
 
-    conn = httplib.HTTPConnection('www.furk.net')
-    #conn= httplib.HTTPConnection('proxyinternet.frlev.danet')
-    return conn
-    
+
 # make a JSON api request to trakt
 # method: http method (GET or POST)
 # req: REST request (ie '/user/library/movies/all.json/%%API_KEY%%/%%USERNAME%%')
@@ -34,43 +29,21 @@ def getTraktConnection():
 # passVersions: default is False, when true it passes extra version information to trakt to help print problems
 def furkJsonRequest(method, req, args={}, returnStatus=False, anon=False, conn=False, silent=False, passVersions=False):
     apikey = settings.getSetting('furk_apikey')
-    closeConnection = False
-    conn = getTraktConnection()
-    print ("conn1")
-    closeConnection = True
-    print ("conn2")
+    if settings.getSetting('proxy')=="false":
+        myproxy={}
+    else:
+        proxy = urllib2.ProxyHandler({'http':'http://proxyinternet.frlev.danet:80','https':'https://proxyinternet.frlev.danet:80'})
+        opener = urllib2.build_opener(proxy)
+        urllib2.install_opener(opener)
+
     req = 'https://www.furk.net/api/' + req
     req = req.replace("%%API_KEY%%",apikey)
-    if method == 'POST':
-            if not anon:
-                args['username'] = username
-                args['password'] = pwd
-                args['hide_watchlisted']= 'true'
-            if passVersions:
-                args['plugin_version'] = __settings__.getAddonInfo("version")
-                args['media_center'] = 'xbmc'
-                args['media_center_version'] = xbmc.getInfoLabel("system.buildversion")
-                args['media_center_date'] = xbmc.getInfoLabel("system.builddate")
-            jdata = json.dumps(args)
-            print(req)
-            print(jdata)
-            conn.request('POST', req, jdata)
-    elif method == 'GET':
-            jdata = json.dumps(args)
-            conn.request('GET', req, jdata)
-            print(req)
-            print("trakt json url: "+req)
-    #conn.go()
 
-    response = conn.getresponse()
-   
-    raw = response.read()
-    try:
-	   data = json.loads(raw)
-    except:
-	   data = None
-    if data == None:
-	   return None
+
+    raw = urllib2.urlopen(req).read()
+
+    data = json.loads(raw)
+
     if 'status' in data:
         if data['status'] == 'error':
             print("traktQuery: Error: " + str(data['error']))
@@ -86,11 +59,10 @@ def furkJsonRequest(method, req, args={}, returnStatus=False, anon=False, conn=F
 
 def searchFurk(query):
     data = furkJsonRequest('GET', 'plugins/metasearch?api_key=%%API_KEY%%&q={0}&limit=50'.format(urllib.quote(query)))
-    
     if data == None:
         print("Error in request from 'searchFurk'")
 	return None
-    try:	
+    try:
         return data['files']
     except:
 	return None
@@ -98,11 +70,11 @@ def searchFurk(query):
 
 def myFeeds():
     data = furkJsonRequest('GET', 'feed/get?api_key=%%API_KEY%%')
-    
+
     if data == None:
         print("Error in request from 'searchFurk'")
         return None
-    try:    
+    try:
         return data
     except:
         return None
@@ -113,25 +85,25 @@ def addFeed(name):
     if data == None:
         print("Error in request from 'searchFurk'")
         return None
-    try:    
+    try:
         return data
     except:
         return None
 
-    
+
 def myFiles(name=None):
     if not name:
         data = furkJsonRequest('GET', 'file/get?api_key=%%API_KEY%%')
     else:
         name = urllib.quote(name)
         data = furkJsonRequest('GET', 'file/get?api_key=%%API_KEY%%&name_like={0}'.format(name))
-    
+
     if data == None:
         print("Error in request from 'searchFurk'")
         return None
-    try:	
+    if data['found_files']>0:
         return data['files']
-    except:
+    else:
         return None
 
 
@@ -164,4 +136,4 @@ def login(username,password):
 		notification ('Login to Furk succesful for' , username)
 	except:
 		notification ('output' , out)
-		
+

@@ -21,7 +21,8 @@ def testUser(username,pwd):
 
 # get a connection to trakt
 def getTraktConnection():
-    conn = httplib.HTTPConnection('api.trakt.tv')
+    #conn = httplib.HTTPConnection('api.trakt.tv')
+    conn = httplib.HTTPConnection('proxyinternet.frlev.danet')
     return conn
     
 # make a JSON api request to trakt

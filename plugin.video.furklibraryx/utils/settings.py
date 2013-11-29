@@ -1,22 +1,25 @@
 DEBUG = False
 try:
-    import xbmcaddon,xbmc
+    import xbmcaddon, xbmc
     ADDON = xbmcaddon.Addon(id='plugin.video.furklibraryx')
 except:
     ADDON = None
+    myvars = {}
+    from xml.dom import minidom
+    xmldoc = minidom.parse('keys.key')
+    itemlist = xmldoc.getElementsByTagName('setting')
+    for s in itemlist :
+        name, var = s.attributes['id'].value , s.attributes['value'].value
+        myvars[name.strip()] = var
 
 def getSetting(myKey):
     if ADDON:
         return ADDON.getSetting(myKey)
     else:
-        if myKey=='trakt_login':
-            return 'akina'
-        elif myKey=='trakt_password':
-            return '*****'
-        else:
-            return ADDON.getSetting(myKey)
-def setSetting(myKey,myValue):
-	ADDON.setSetting(id=myKey,value=myValue)
+        return myvars[myKey]
+
+def setSetting(myKey, myValue):
+	ADDON.setSetting(id=myKey, value=myValue)
 def openSettings():
 	ADDON.openSettings()
 def getTimersetting():
@@ -30,12 +33,15 @@ def getTimersetting():
 	return timer_amounts[ADDON.getSetting("update_timer")]
 
 def getQualitysetting():
-	quality_amounts = {}
-	quality_amounts['0'] = 0
-	quality_amounts['1'] = 450
-	quality_amounts['2'] = 750
-	quality_amounts['3'] = 1200
-	return quality_amounts[ADDON.getSetting("quality")],quality_amounts[ADDON.getSetting("quality")+1]
+    quality_amounts = {}
+    quality_amounts['0'] = 0
+    quality_amounts['1'] = 450
+    quality_amounts['2'] = 750
+    quality_amounts['3'] = 1200
+    if ADDON:
+            return quality_amounts[ADDON.getSetting("quality")], quality_amounts[ADDON.getSetting("quality") + 1]
+    else:
+            return 0,1000
 
 def startTimer():
 	if ADDON.getSetting('auto_update') == "true":
