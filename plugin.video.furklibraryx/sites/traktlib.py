@@ -21,10 +21,10 @@ def testUser(username,pwd):
 
 # get a connection to trakt
 def getTraktConnection():
-    #conn = httplib.HTTPConnection('api.trakt.tv')
-    conn = httplib.HTTPConnection('proxyinternet.frlev.danet')
+    conn = httplib.HTTPConnection('api.trakt.tv')
+    #conn = httplib.HTTPConnection('proxyinternet.frlev.danet')
     return conn
-    
+
 # make a JSON api request to trakt
 # method: http method (GET or POST)
 # req: REST request (ie '/user/library/movies/all.json/%%API_KEY%%/%%USERNAME%%')
@@ -70,7 +70,7 @@ def traktJsonRequest(method, req, args={}, returnStatus=False, anon=False, conn=
 
     except:
 	return None
-    
+
     if 'status' in data:
         if data['status'] == 'failure':
             print("traktQuery: Error: " + str(data['error']))
@@ -103,7 +103,7 @@ def getRecommendedShowsFromTrakt(genre):
     args['hide_watchlisted'] = True
     if genre:
 	    args['genre'] = genre
-	    
+
     data = traktJsonRequest('POST', '/recommendations/shows/%%API_KEY%%' ,args)
 
     if data == None:
@@ -332,4 +332,3 @@ def getList(user,slug):
 		print("Error in request from 'getList()'")
 	print data
 	return data
-	

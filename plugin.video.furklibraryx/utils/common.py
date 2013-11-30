@@ -16,12 +16,12 @@ def RemoveDirectory(dir):
 		if os.path.exists(dir):
 			pDialog = xbmcgui.DialogProgress()
 			pDialog.create(' Removing directory...')
-			pDialog.update(0, dir)	
+			pDialog.update(0, dir)
 			shutil.rmtree(dir)
 			pDialog.close()
 			Notification("Directory removed", dir)
 		else:
-			Notification("Directory not found", "Can't delete what does not exist.")	
+			Notification("Directory not found", "Can't delete what does not exist.")
 
 def Notification(title, message):
         try:
@@ -32,7 +32,7 @@ def Notification(title, message):
 
 def createMovieStrm(movietitle,movieyear,imdbid = 0):
 	ret = 0
-	CreateDirectory(MOVIES_PATH)		
+	CreateDirectory(MOVIES_PATH)
 	filename = '/{0} ({1})'.format(movietitle.encode('ascii', 'ignore'),movieyear)
 	filename = CleanFileName(filename)
 	filename = os.path.join(MOVIES_PATH, filename+'.strm' )
@@ -42,12 +42,12 @@ def createMovieStrm(movietitle,movieyear,imdbid = 0):
 			'''plugin://plugin.video.furklibraryx/default.py?action=SearchMe&type=Movie&title={0}&year={1}&imdbid={2}'''.format(CleanFileName(movietitle), movieyear,imdbid))
 		ret = 1
 		Notification('Scraped:',movietitle)
-	return ret 
+	return ret
 
 def createShowStrm(show_name,season,number,tvdbid):
     ret = 0
     show_path = os.path.join(TV_SHOWS_PATH, CleanFileName(show_name))
-    CreateDirectory(show_path)		
+    CreateDirectory(show_path)
     season_path = os.path.join(show_path, str(season))
     showfull = '''{0} S{1:0>2}E{2:0>2}'''.format(show_name, season,number)
     showfull = CleanFileName(showfull)
@@ -139,7 +139,7 @@ def getMovieInfobySearch(movietitle,movieyear):
 	filename = CleanFileName(filename)
 	filename = os.path.join(CACHE_PATH, filename+'.txt' )
 	movie = readMovie(filename,type='search')
-	if movie: 
+	if movie:
 		return getMovieInfobyImdbid(movie['imdb_id'])
 
 	movies = traktlib.getMovieInfobySearch(movietitle)
@@ -174,7 +174,7 @@ def getMovieFromCache(imdbid):
 	movie = readMovie(filename)
 	#if movie: print 'Movie is in cache'
 	return movie
-		
+
 def readMovie(filename,type='normal'):
 	if not os.path.isfile(filename):
 		return None
@@ -209,7 +209,7 @@ def checkWatched(movie):
 		f = open(filename, 'r')
 		raw = f.read()
 		watchedMovies = json.loads(raw)
-	
+
 
 	for watchedMovie in watchedMovies:
 		if movie['imdb_id'] == watchedMovie['imdb_id']:
@@ -217,7 +217,7 @@ def checkWatched(movie):
 			movie['watched'] = True
 			#writeMovietoCache(movie['imdb_id'].lstrip('t'),movie)
 			return movie
-			
+
 
 	return movie
 
@@ -227,7 +227,7 @@ def writeMovie(filename,data):
 	with open(filename, 'w') as f:
 		f.write(json.dumps(data))
 	ret = 1
-	return ret 
+	return ret
 
 def writeMovietoCache(imdbid,data):
 	ret = 0
@@ -251,7 +251,7 @@ def getMovieInfobyImdbid (imdbid):
 	if movie: return movie
 	return None
 
-	
+
 
 def createMovieListItemfromimdbid(imdbid,totalItems = 10 , extrainfo = None):
 	movie = getMovieInfobyImdbid(imdbid)
@@ -276,7 +276,7 @@ def createMovieListItemTrakt(movie, movietitle = None,movieyear = None, totalIte
 			s= extrainfo.format(movietitle.encode("utf-8"),movieyear)
 		else:
 			s= '{0} ({1})'.format(movietitle.encode("utf-8"),movieyear)
-	
+
 	li = xbmcgui.ListItem(s)
 
 	if imdbid:
@@ -297,27 +297,31 @@ def createShowListItemTrakt(show, totalItems = 10,season =1,episode=1):
 			fullywatched = True
 			season,episode = 1,1
 		else:
+			print show
 			showtitle = show['title']
-		tvdbid = show['tvdb_id']
+		try:
+			tvdbid = show['tvdb_id']
+		except:
+			tvdbid = None
 	else:
 		tvdbid = None
 #	try:
 #		s =  movie['extrainfo'].format(movietitle.encode("utf-8"),movieyear)
 #	except:
 #		s= '{0} ({1})'.format(movietitle.encode("utf-8"),movieyear)
-#	
+#
 	text = showtitle
 	season_episode = "s%.2de%.2d" % (int(season), int(episode))
 	text= showtitle +' '+ season_episode
 	li = xbmcgui.ListItem(text)
 
-	if tvdbid and season==1 and episode==1: 
+	if tvdbid and season==1 and episode==1:
 			if fullywatched:
 				cm = [( "Dismiss show", "XBMC.RunPlugin(%s?action=trakt_DismissShow&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid), ) ,  ( "Add show to watchlist", "XBMC.RunPlugin(%s?action=trakt_AddShowtoWatchlist&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid),) ]
 			else:
 				cm = [( "Mark Whole Show as seen", "XBMC.RunPlugin(%s?action=trakt_SetShowSeen&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid), ) , ( "Mark Episode as seen", "XBMC.RunPlugin(%s?action=trakt_SetShowSeen&tvdbid=%s&season=%s&episode=%s)" % ( sys.argv[ 0 ], tvdbid,season,episode), ) ,  ( "Dismiss show", "XBMC.RunPlugin(%s?action=trakt_DismissShow&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid), ) ,  ( "Add show to watchlist", "XBMC.RunPlugin(%s?action=trakt_AddShowtoWatchlist&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid),) ]
-	
-	elif tvdbid: 
+
+	elif tvdbid:
 	       	cm = [( "Watch previous episode - beta", "XBMC.RunPlugin(%s?action=SearchMe&go=now&type=Show&title=%s&season=%s&episode=%s&tvdbid=%s)" % ( sys.argv[ 0 ], show['title'],season,episode-1,tvdbid), ) , ( "Mark Episode as seen", "XBMC.RunPlugin(%s?action=trakt_SetShowSeen&tvdbid=%s&season=%s&episode=%s)" % ( sys.argv[ 0 ], tvdbid,season,episode), ) ,  ( "Dismiss show", "XBMC.RunPlugin(%s?action=trakt_DismissShow&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid), ) ,  ( "Add show to watchlist", "XBMC.RunPlugin(%s?action=trakt_AddShowtoWatchlist&tvdbid=%s)" % ( sys.argv[ 0 ], tvdbid), ) ]
 
         li.addContextMenuItems( cm, replaceItems=False )
@@ -337,14 +341,14 @@ def createMovieListItem(text, movietitle, movieyear, totalItems = 10 , imdbid=No
 			pass
 	else:
 			mymovie = getMovieInfobySearch(movietitle,movieyear)
-	
-			
+
+
 
 	if mymovie:
 		createMovieListItemTrakt(mymovie, totalItems = totalItems)
 	else:
 		createMovieListItemTrakt(None,movietitle,movieyear,totalItems = totalItems)
-		
+
 	return
 
 def createListItem(text, isFolder, url, name='',totalItems = 10):
@@ -388,14 +392,14 @@ def addMovieInfotoListitem(li,movie):
 	if rating == 0 :
 		rating = int(movie['ratings']['percentage']) / 10.0
 	li.setInfo('video', { 'Rating': rating })
-	
+
 	mygenre = ''
 	try:
 		for genre in movie['genres']:
 			mygenre = mygenre + genre + ' / '
-	
+
 		if len(mygenre)>0:
-			mygenre = mygenre[:-2] 
+			mygenre = mygenre[:-2]
 		li.setInfo('video', { 'Genre': mygenre})
 	except:
 		pass
@@ -410,7 +414,7 @@ def addMovieInfotoListitem(li,movie):
 			li.setInfo('video', { 'Trailer': url })
 	except:
 		pass
-	
+
 	try:
 		if movie['watched']==True:
 			li.setInfo( "video", { "playcount": 1 } )
@@ -432,7 +436,7 @@ def addMovieInfotoListitem(li,movie):
 		for director in movie['people']['directors']:
 			directors += director['name'] + ' / '
 		if len(directors)>0:
-			directors = directors[:-2] 
+			directors = directors[:-2]
 			li.setInfo('video', { 'Director' : directors } )
 	except:
 		pass
@@ -445,7 +449,7 @@ def addMovieInfotoListitem(li,movie):
 		for director in movie['people']['writers']:
 			directors += director['name'] + ' / '
 		if len(directors)>0:
-			directors = directors[:-2] 
+			directors = directors[:-2]
 			li.setInfo('video', { 'Writer' : directors } )
 	except:
 		pass
@@ -484,9 +488,9 @@ def addShowInfotoListitem(li,show):
 		mygenre = ''
 		for genre in show['genres']:
 			mygenre = mygenre + genre + ' / '
-	
+
 		if len(mygenre)>0:
-			mygenre = mygenre[:-2] 
+			mygenre = mygenre[:-2]
 		li.setInfo('video', { 'Genre': mygenre})
 	except:
 		pass
@@ -534,9 +538,9 @@ def addEpisodeInfotoListitem(li,episodedata):
 		mygenre = ''
 		for genre in show['genres']:
 			mygenre = mygenre + genre + ' / '
-	
+
 		if len(mygenre)>0:
-			mygenre = mygenre[:-2] 
+			mygenre = mygenre[:-2]
 		li.setInfo('video', { 'Genre': mygenre})
 	except:
 		pass
@@ -569,13 +573,13 @@ def addMovieInfotoPlayListitem(li,movie):
 	if rating == 0 :
 		rating = int(movie['ratings']['percentage']) / 10.0
 	li.setInfo('video', { 'Rating': rating })
-	
+
 	mygenre = ''
 	for genre in movie['genres']:
 		mygenre = mygenre + genre + ' / '
-	
+
 	if len(mygenre)>0:
-		mygenre = mygenre[:-2] 
+		mygenre = mygenre[:-2]
 	li.setInfo('video', { 'Genre': mygenre})
 
 #	try:
@@ -588,7 +592,7 @@ def addMovieInfotoPlayListitem(li,movie):
 #			li.setInfo('video', { 'Trailer': url })
 #	except:
 #		pass
-#	
+#
 	try:
 		cast = []
 		for actor in movie['people']['actors']:
@@ -601,7 +605,7 @@ def addMovieInfotoPlayListitem(li,movie):
 		for director in movie['people']['directors']:
 			directors += director['name'] + ' / '
 		if len(directors)>0:
-			directors = directors[:-2] 
+			directors = directors[:-2]
 			li.setInfo('video', { 'Director' : directors } )
 	except:
 		pass
@@ -614,7 +618,7 @@ def addMovieInfotoPlayListitem(li,movie):
 		for director in movie['people']['writers']:
 			directors += director['name'] + ' / '
 		if len(directors)>0:
-			directors = directors[:-2] 
+			directors = directors[:-2]
 			li.setInfo('video', { 'Writer' : directors } )
 	except:
 		pass

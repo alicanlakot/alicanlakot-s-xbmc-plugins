@@ -9,7 +9,7 @@ from utils import functions,settings
 from ext.titles.series import SeriesParser
 from ext.titles.movie import MovieParser
 from ext.titles.parser import TitleParser, ParseWarning
-import re
+import re,unicodedata
 
 
 
@@ -38,6 +38,33 @@ class Search():
                     self.best_quality_result = SR
         return
 
+    def quality_options(self):
+        return [i.text for i in self.results]
+
+    def fillOptions(self):
+        while True:
+            SR = self.checkNext()
+            if SR == None:
+                break
+
+    def oneClickResult(self):
+        while True:
+            SR = self.checkNext()
+            if SR == None:
+                break
+            if SR.oneclick:
+                break
+        if self.best_quality_result:
+            return self.best_quality_result
+        else:
+            return None
+
+    def checkNext(self):
+        self.dirindex = self.dirindex + 1
+        if self.dirindex > len(self.dirs):
+            return None
+        return self.check()
+
 class SearchResult():
     def __init__(self,myfile,quality,valid):
         self.valid = valid
@@ -45,7 +72,10 @@ class SearchResult():
         self.quality = quality
         self.oneclick = None
         mysize = size(int(myfile['size']))
-        self.text = '[' + mysize + ' / ] '+str(quality.value) + ' ' + myfile['name']
+        self.text = str('[' + mysize + '] '+str(quality) + ' ' + myfile['name'])
+
+    def __repr__(self):
+        return self.text
 
     def mediaUrl(self):
             files = furklib.fileInfo(self.file['info_hash'])
@@ -61,6 +91,56 @@ class SearchResult():
                     continue
             return None
 
+class MovieSearch(Search):
+    def __init__(self, title,year,oneclick):
+        Search.__init__(self)
+        self.title = title.encode("utf-8")
+        self.year = year
+        self.oneclick = oneclick
+        if year==0:
+            query = '{0} -cam'.format(title)
+        else:
+            query = '{0} {1} -cam'.format(title,year)
+
+        self.dirs = furklib.searchFurk(query)
+
+    def check(self):
+        file = self.dirs[self.dirindex]
+        if file['is_ready']=='0':
+            return
+        id = file['info_hash']
+        dirname = file['name']
+        valid = False
+        parser = MovieParser()
+        parser.data = dirname
+        parser.parse()
+        myName = parser.name
+        myYear = parser.year
+        myquality = parser.quality
+        movie_name =  str(myquality) + ' ' + dirname
+        movie_name2 = str(myquality) + ' ' + self.title.strip() + ' (' + str(self.year) + ')'
+
+        if self.year==0 and self.title.lower() in myName.lower():
+            valid = True
+        if not myYear:
+            myYear = 0
+            valid = False
+            
+        title = unicodedata.normalize('NFKD',unicode(self.title,'utf-8')).encode('ASCII', 'ignore')
+        #print 'T:' + title.lower()
+        #print 'M:' + myName.lower()
+        if title.lower() in myName.lower() and myquality.value>250:
+            valid = True
+
+        if valid:
+            self.valids += 1
+            SR = SearchResult(file,myquality,True)
+            self.checkOneClick(SR)
+            self.results.append(SR)
+            return SR
+
+        else:
+            return None
 
 
 class ShowSearch(Search):
@@ -73,18 +153,6 @@ class ShowSearch(Search):
         self.oneclick = oneclick
         query = '''{0} S{1:0>2}E{2:0>2}'''.format(self.title, self.season, self.number)
         self.dirs = furklib.searchFurk(query)
-
-    def oneClickResult(self):
-        while True:
-            SR = self.checkNext()
-            if SR == None:
-                break
-            if SR.oneclick:
-                break
-        if self.best_quality_result:
-            return self.best_quality_result
-        else:
-            return None
 
 
 
@@ -118,14 +186,6 @@ class ShowSearch(Search):
                 self.results.append(SR)
                 return SR
 
-                #Notification('Quality:',str(myquality))
-
-
-    def checkNext(self):
-        self.dirindex = self.dirindex + 1
-        if self.dirindex > len(self.dirs):
-            return None
-        return self.check()
 
 
     def guess_series(self,title):

@@ -39,7 +39,7 @@ def getQualitysetting():
     quality_amounts['2'] = 750
     quality_amounts['3'] = 1200
     if ADDON:
-            return quality_amounts[ADDON.getSetting("quality")], quality_amounts[ADDON.getSetting("quality") + 1]
+            return quality_amounts[ADDON.getSetting("quality")], quality_amounts[str(int(ADDON.getSetting("quality")) + 1)]
     else:
             return 0,1000
 

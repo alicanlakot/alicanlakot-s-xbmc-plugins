@@ -2,6 +2,7 @@ import json
 import httplib
 import datetime
 import os
+
 import urllib
 import urllib2
 from xml.dom.minidom import Document
@@ -14,7 +15,11 @@ headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/
 
 
 # get a connection to trakt
+def getTraktConnection():
 
+    conn = httplib.HTTPConnection('www.furk.net')
+    #conn= httplib.HTTPConnection('proxyinternet.frlev.danet')
+    return conn
 
 # make a JSON api request to trakt
 # method: http method (GET or POST)
@@ -29,29 +34,47 @@ headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/
 # passVersions: default is False, when true it passes extra version information to trakt to help print problems
 def furkJsonRequest(method, req, args={}, returnStatus=False, anon=False, conn=False, silent=False, passVersions=False):
     apikey = settings.getSetting('furk_apikey')
-    if settings.getSetting('proxy')=="false":
-        myproxy={}
-    else:
-        proxy = urllib2.ProxyHandler({'http':'http://proxyinternet.frlev.danet:80','https':'https://proxyinternet.frlev.danet:80'})
-        opener = urllib2.build_opener(proxy)
-        urllib2.install_opener(opener)
-
+    closeConnection = False
+    conn = getTraktConnection()
+    print ("conn1")
+    closeConnection = True
+    print ("conn2")
     req = 'https://www.furk.net/api/' + req
     req = req.replace("%%API_KEY%%",apikey)
+    if method == 'POST':
+            if not anon:
+                args['username'] = username
+                args['password'] = pwd
+                args['hide_watchlisted']= 'true'
 
+            jdata = json.dumps(args)
+            print(req)
+            print(jdata)
+            conn.request('POST', req, jdata)
+    elif method == 'GET':
+            jdata = json.dumps(args)
+            conn.request('GET', req, jdata)
+            print(req)
+            print("trakt json url: "+req)
+    #conn.go()
 
-    raw = urllib2.urlopen(req).read()
+    response = conn.getresponse()
 
-    data = json.loads(raw)
-
+    raw = response.read()
+    try:
+       data = json.loads(raw)
+    except:
+       data = None
+    if data == None:
+       return None
     if 'status' in data:
         if data['status'] == 'error':
             print("traktQuery: Error: " + str(data['error']))
             if returnStatus:
                 return data
-            if not silent: notification("Furk Library", str(data['error'])) # Error
-	    login(settings.getSetting('furk_login'),settings.getSetting('furk_password'))
-            return data
+            if not silent: print ("Furk Library", str(data['error'])) # Error
+        #login(settings.getSetting('furk_login'),settings.getSetting('furk_password'))
+        return data
 
     return data
 
@@ -61,11 +84,11 @@ def searchFurk(query):
     data = furkJsonRequest('GET', 'plugins/metasearch?api_key=%%API_KEY%%&q={0}&limit=50'.format(urllib.quote(query)))
     if data == None:
         print("Error in request from 'searchFurk'")
-	return None
+        return None
     try:
         return data['files']
     except:
-	return None
+        return None
 
 
 def myFeeds():
@@ -101,9 +124,9 @@ def myFiles(name=None):
     if data == None:
         print("Error in request from 'searchFurk'")
         return None
-    if data['found_files']>0:
+    try:
         return data['files']
-    else:
+    except:
         return None
 
 
@@ -112,28 +135,22 @@ def fileInfo(hash):
     data = furkJsonRequest('GET', 'file/info?api_key=%%API_KEY%%&info_hash={0}&t_files=1'.format(hash))
     if data == None:
         print("Error in request from 'getWatchlistMoviesFromTrakt()'")
-	return None
+        return None
     return data['files'][0]['t_files']
 
-def notification(title, message):
-        try:
-                xbmc.executebuiltin("XBMC.Notification("+title+","+message+")")
-                print message.encode("utf-8")
-        except: pass
-        return
 
 
 def login(username,password):
-	url= 'http://api.furk.net/api/login/login'
-	values = {'login':username, 'pwd': password}
-	data = urllib.urlencode(values)
-	req = urllib2.Request(url, data)
-	resp = urllib2.urlopen(req)
-	out = json.loads(resp.read())
-	#notification ('output' , out['api_key'])
-	try:
-		settings.setSetting('furk_apikey',out['api_key'])
-		notification ('Login to Furk succesful for' , username)
-	except:
-		notification ('output' , out)
+    url= 'http://api.furk.net/api/login/login'
+    values = {'login':username, 'pwd': password}
+    data = urllib.urlencode(values)
+    req = urllib2.Request(url, data)
+    resp = urllib2.urlopen(req)
+    out = json.loads(resp.read())
+    #notification ('output' , out['api_key'])
+    try:
+        settings.setSetting('furk_apikey',out['api_key'])
+        common.notification ('Login to Furk succesful for' , username)
+    except:
+        common.notification ('output' , out)
 

@@ -13,10 +13,10 @@ def addToXbmcLib(fg = None):
         imdbshows = imdb.watchlist_shows(url,0)
         traktlib.addShowstoWatchlist(imdbshows)
 
-    
+
 	if settings.getSetting("add_trending"):
 	    	if fg == 'True':
-    			common.Notification('Getting:','Trending')	
+    			common.Notification('Getting:','Trending')
 	    	movies = traktlib.getTrendingMoviesFromTrakt()
     		if movies:
     			for movie in movies:
@@ -24,66 +24,43 @@ def addToXbmcLib(fg = None):
     					totalAdded = totalAdded + common.createMovieStrm(movie['title'],movie['year'],movie['imdb_id'])
     					common.createMovieNfo(movie['title'],movie['year'],movie['imdb_id'])
 
-	
+
 	if settings.getSetting("add_recommended"):
 		if fg == 'True':
-			common.Notification('Getting:','Recommended')	
+			common.Notification('Getting:','Recommended')
 		movies = traktlib.getRecommendedMoviesFromTrakt()
 		if movies:
 		    for movie in movies:
 			totalAdded = totalAdded + common.createMovieStrm(movie['title'],movie['year'],movie['imdb_id'])
 			common.createMovieNfo(movie['title'],movie['year'],movie['imdb_id'])
-	
+
 	if settings.getSetting("add_watchlistmovies"):
 		if fg == 'True':
-			common.Notification('Getting:','Watchlist Movies')	
+			common.Notification('Getting:','Watchlist Movies')
 		movies = traktlib.getWatchlistMoviesFromTrakt()
 		for movie in movies:
 			totalAdded = totalAdded + common.createMovieStrm(movie['title'],movie['year'],movie['imdb_id'])
 			common.createMovieNfo(movie['title'],movie['year'],movie['imdb_id'])
-	
+
 	if settings.getSetting("add_watchlistshows"):
-		if fg == 'True':		
-			common.Notification('Getting:','Watchlist Shows')	
+		if fg == 'True':
+			common.Notification('Getting:','Watchlist Shows')
 		totalAdded = totalAdded + getWatchlistShows()
-	    
+
 	if fg == 'True':
 		common.Notification('Total:', str(totalAdded))
 	return totalAdded
 
 
 
-# 	if fg == 'True':
-# 		common.Notification('Getting:','Calendar Shows')	
-# 	d = datetime.date.today() + datetime.timedelta(days=-8)
-# 	currentdate = d.strftime('%Y%m%d')
-# 	series = traktlib.getShowsCalendarFromTrakt(currentdate)
-# 	for show in series:
-# 	    episodes = show['episodes']
-    
-# 	    for episode in episodes:
-# 		myepisode = episode['episode']
-# 	        myshow = episode['show']
-# 		totalAdded = totalAdded + common.createShowStrm(myshow['title'],myepisode['season'],myepisode['number'],myshow['tvdb_id'])
-	
-#	premieres= getPremieresCalendarFromTrakt(currentdate)
-#	for show in premieres:
-#	    episodes = show['episodes']
-#	    for episode in episodes:
-#		myepisode = episode['episode']
-#	        myshow = episode['show']
-#		season = myepisode['season']
-#		if season==1:
-#			totalAdded = totalAdded + common.createShowStrm(myshow,myepisode,myshow['tvdb_id'])
 
-	
 
 
 def getWatchlistShows():
 	tot = 0
 	shows = traktlib.getWatchlistShowsfromTrakt()
 #	for myshow in shows:
-#		
+#
 #		seasons = traktlib.getSeasons(myshow['tvdb_id'])
 #		common.Notification('Getting:', myshow['title'])
 #		for season in seasons:
@@ -112,13 +89,13 @@ def getWatchlistShows():
 	return tot
 
 
-def displayGenres(type):	
+def displayGenres(type):
 	if type == 'Movie':
 		genres = traktlib.getMovieGenres()
-		url = sys.argv[0]+'?action=trakt_RecommendedMovies&genre=' 
+		url = sys.argv[0]+'?action=trakt_RecommendedMovies&genre='
 	elif type == 'Show' :
 		genres = traktlib.getShowGenres()
-		url = sys.argv[0]+'?action=trakt_RecommendedShows&genre=' 
+		url = sys.argv[0]+'?action=trakt_RecommendedShows&genre='
 
 	for genre in genres:
 		common.createListItem(genre['name'], True, url+genre['slug'])
@@ -132,9 +109,10 @@ def displayRecommendedShows(genre):
 
 def displayProgress():
     shows = calculateProgress()
+
     for show in shows:
         if show['season'] <>0:
-            common.createShowListItemTrakt(show['title'],len(shows),show['season'],show['episode'])
+            common.createShowListItemTrakt(show,len(shows),show['season'],show['episode'])
     common.endofDir()
 
 
@@ -152,6 +130,7 @@ def calculateProgress():
         showprogress['title'] = current['show']['title']
         showprogress['season'] = lastseason
         showprogress['episode'] = lastepisode
+        showprogress['tvdb_id'] = current['show']['tvdb_id']
         shows.append(showprogress)
     return shows
 
@@ -216,7 +195,7 @@ def traktSeenShow(tvdbid,season,episode):
 		show['rating'] = ratings[myrating]
 		response = traktlib.setRating(show,'show')
 		common.traktResponse(response)
-	
+
 	response = traktlib.setShowSeen(tvdbid,season,episode)
 	common.traktResponse(response)
 
@@ -251,7 +230,7 @@ def addMovietoWatchlist(imdbid):
 def traktAction(params):
 	if(params['action'] == 'trakt_Menu'):
 		displayTraktMenu()
-	
+
 	elif(params['action'] == 'trakt_SearchMovies'):
 	        # Search
 	        keyboard = xbmc.Keyboard('', 'Search')
@@ -262,7 +241,7 @@ def traktAction(params):
 			for movie in movies:
 				common.createMovieListItemTrakt(movie,totalItems = len(movies))
 			common.endofDir()
-	
+
 	elif(params['action'] == 'trakt_SearchShows'):
 	        # Search
 	        keyboard = xbmc.Keyboard('', 'Search')
@@ -273,8 +252,8 @@ def traktAction(params):
 			for show in shows:
 				common.createShowListItemTrakt(show,totalItems = len(shows))
 			common.endofDir()
-	
-		
+
+
 	elif(params['action'] == 'trakt_SeenRate'):
 		imdbid = params['imdbid']
 		traktSeenRate(imdbid)
@@ -297,21 +276,21 @@ def traktAction(params):
 			genre = None
 		if genre:
 			displayRecommendedShows(genre)
-		else :			
-			url = sys.argv[0]+'?action=trakt_ShowGenres' 
+		else :
+			url = sys.argv[0]+'?action=trakt_ShowGenres'
 			common.createListItem('Filter by Genre', True, url)
 			displayRecommendedShows(genre)
 
 	elif(params['action'] == 'trakt_listfeeds'):
 			myfeeds = furklib.myFeeds()['feeds']
 			myfeeds = sorted(myfeeds,key=lambda feed: feed['name'])
-			url = sys.argv[0]+'?action=trakt_addfeeds' 
+			url = sys.argv[0]+'?action=trakt_addfeeds'
 			common.createListItem('Add Feeds from trakt', True, url)
 			for feed in myfeeds:
-				url = sys.argv[0]+'?action=trakt_MovieGenres' 
+				url = sys.argv[0]+'?action=trakt_MovieGenres'
 				common.createListItem(feed['name'], True, url)
 			common.endofDir()
-	
+
 	elif(params['action'] == 'trakt_addfeeds'):
 			myfeeds = furklib.myFeeds()['feeds']
 			shows = traktlib.getWatchlistShowsfromTrakt()
@@ -324,11 +303,11 @@ def traktAction(params):
 				check = [feed for feed in myfeeds if feed['name'] == show['title']]
 				if len(check)==0:
 					furklib.addFeed(show['title'])
-					url = sys.argv[0]+'?action=trakt_MovieGenres' 
+					url = sys.argv[0]+'?action=trakt_MovieGenres'
 					common.createListItem(show['title'], False, '')
 			common.endofDir()
-			
-	
+
+
 
 	elif(params['action'] == 'trakt_RecommendedMovies'):
 		try:
@@ -337,8 +316,8 @@ def traktAction(params):
 			genre = None
 		if genre:
 			displayRecommendedMovies(genre)
-		else :			
-			url = sys.argv[0]+'?action=trakt_MovieGenres' 
+		else :
+			url = sys.argv[0]+'?action=trakt_MovieGenres'
 			common.createListItem('Filter by Genre', True, url)
 			displayRecommendedMovies(genre)
 
@@ -346,7 +325,7 @@ def traktAction(params):
 	elif(params['action'] == 'trakt_AddShowtoWatchlist'):
 		tvdbid = params['tvdbid']
 		addShowtoWatchlist(tvdbid)
-	
+
 	elif(params['action'] == 'trakt_AddMovietoWatchlist'):
 		imdbid = params['imdbid']
 		addMovietoWatchlist(imdbid)
@@ -359,7 +338,7 @@ def traktAction(params):
 	elif(params['action'] == 'trakt_DismissShow'):
 		tvdbid = params['tvdbid']
 		traktDismissShow(tvdbid)
-	
+
 	elif(params['action'] == 'trakt_SetShowSeen'):
 		tvdbid = params['tvdbid']
 		try:
@@ -385,7 +364,7 @@ def traktAction(params):
 			else:
 				common.createShowListItemTrakt(show,totalItems = len(shows))
 		common.endofDir()
-	
+
 	elif(params['action'] == 'trakt_Progress'):
 		displayProgress()
 	elif(params['action'] == 'trakt_getList'):
@@ -396,7 +375,7 @@ def traktAction(params):
 		common.Notification('Action Not found:' , params['action'])
 
 def displayTraktMenu():
-	
+
 	url = sys.argv[0]+'?action='
 	common.createListItem('--------------FEEDS------------------', False, '')
 	common.createListItem('List my feeds', True, url+'trakt_listfeeds')
