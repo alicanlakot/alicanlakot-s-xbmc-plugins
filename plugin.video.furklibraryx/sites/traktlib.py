@@ -1,5 +1,5 @@
 import json
-import httplib
+from ext import requests
 import os
 import unicodedata
 from xml.dom.minidom import Document
@@ -9,21 +9,6 @@ from utils import settings
 apikey = '7a933ed6ba1c34da229231dd0e9dfc63'
 headers = {"Content-type": "application/x-www-form-urlencoded", "Accept": "text/plain"}
 # End Trakt
-
-
-def testUser(username,pwd):
-	data = traktJsonRequest('POST', '/account/test/%%API_KEY%%',args = {},returnStatus=True)
-	if data == None:
-		print("Error in request from 'getTrendingMoviesFromTrakt()'")
-	return data
-
-
-
-# get a connection to trakt
-def getTraktConnection():
-    conn = httplib.HTTPConnection('api.trakt.tv')
-    #conn = httplib.HTTPConnection('proxyinternet.frlev.danet')
-    return conn
 
 # make a JSON api request to trakt
 # method: http method (GET or POST)
@@ -37,13 +22,21 @@ def getTraktConnection():
 # silent: default is False, when true it disable any error notifications (but not print messages)
 # passVersions: default is False, when true it passes extra version information to trakt to help print problems
 def traktJsonRequest(method, req, args={}, returnStatus=False, anon=False, conn=False, silent=False, passVersions=False):
-    closeConnection = False
-    conn = getTraktConnection()
-    closeConnection = True
-    req = 'http://api.trakt.tv' + req
-    req = req.replace("%%API_KEY%%",apikey)
-    req = req.replace("%%USERNAME%%",settings.getSetting('trakt_login'))
-    if method == 'POST':
+	if settings.getSetting("proxy") == 'true':
+		http_proxy = settings.getSetting("proxyurl")
+		https_proxy = settings.getSetting("proxyurl")
+		proxyDict = {
+              "http"  : http_proxy,
+              "https" : https_proxy
+            }
+	else:
+		proxyDict = {}
+
+	req = 'http://api.trakt.tv' + req
+	req = req.replace("%%API_KEY%%", apikey)
+	req = req.replace("%%USERNAME%%", settings.getSetting('trakt_login'))
+	print req
+	if method == 'POST':
             if not anon:
                 args['username'] = settings.getSetting('trakt_login')
                 args['password'] = settings.getSetting('trakt_password')
@@ -53,32 +46,33 @@ def traktJsonRequest(method, req, args={}, returnStatus=False, anon=False, conn=
                 args['media_center_version'] = xbmc.getInfoLabel("system.buildversion")
                 args['media_center_date'] = xbmc.getInfoLabel("system.builddate")
             jdata = json.dumps(args)
-            #print(req)
-            #print(jdata)
-            conn.request('POST', req, jdata)
-    elif method == 'GET':
+            # print(req)
+            # print(jdata)
+            request = requests.post(req, data=jdata , proxies=proxyDict)
+	elif method == 'GET':
             args['username'] = settings.getSetting('trakt_login')
             args['password'] = settings.getSetting('trakt_password')
             jdata = json.dumps(args)
-            conn.request('GET', req, jdata)
-            #print("trakt json url: "+req)
-    #conn.go()
-    try:
-	response = conn.getresponse()
-	raw = response.read()
-	data = json.loads(raw)
+            request = requests.get(req, params=jdata, proxies=proxyDict)
 
-    except:
-	return None
+	print 'Response: ' + request.content
+	#data = response.json()
+	try:
+		#response = conn.getresponse()
+		data = request.json()
 
-    if 'status' in data:
-        if data['status'] == 'failure':
-            print("traktQuery: Error: " + str(data['error']))
-            if returnStatus:
-                return data
-            return None
 
-    return data
+	except:
+		return None
+
+	if 'status' in data:
+		if data['status'] == 'failure':
+			print("traktQuery: Error: " + str(data['error']))
+			if returnStatus:
+				return data
+			return None
+
+	return data
 
 # returns list of movies from watchlist
 def getWatchlistMoviesFromTrakt():

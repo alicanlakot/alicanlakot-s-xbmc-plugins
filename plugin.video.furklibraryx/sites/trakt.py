@@ -1,50 +1,50 @@
 from utils import common,settings
-from sites import traktlib, furklib
-import datetime,sys,time
+from sites import traktlib, furklib,imdb
+import sys,time
 import xbmcgui,xbmc
-import sys
-from utils import settings
 
-def addToXbmcLib(fg = None):
-    totalAdded=0
-    if settings.getSetting("auto_addImdb"):
-        imdbmovies = imdb.watchlist_movies(url,0)
+
+
+def addToXbmcLib(fg=None):
+    totalAdded = 0
+    if settings.getSetting("auto_addImdb") == 'true':
+        url = settings.getSetting("imdb_watchlist")
+        imdbmovies = imdb.watchlist_movies(url, 0)
         traktlib.addMoviestoWatchlist(imdbmovies)
-        imdbshows = imdb.watchlist_shows(url,0)
-        traktlib.addShowstoWatchlist(imdbshows)
+        imdbshows = imdb.watchlist_shows(url, 0)
+        traktlib.addShowstoWatchList(imdbshows)
 
-
-	if settings.getSetting("add_trending"):
-	    	if fg == 'True':
-    			common.Notification('Getting:','Trending')
-	    	movies = traktlib.getTrendingMoviesFromTrakt()
-    		if movies:
-    			for movie in movies:
-    				if not movie['watched'] and movie['watchers']>1:
-    					totalAdded = totalAdded + common.createMovieStrm(movie['title'],movie['year'],movie['imdb_id'])
-    					common.createMovieNfo(movie['title'],movie['year'],movie['imdb_id'])
-
-
-	if settings.getSetting("add_recommended"):
+        if settings.getSetting("add_trending") == 'true':
+            if fg == 'True':
+    	       common.Notification('Getting:', 'Trending')
+            movies = traktlib.getTrendingMoviesFromTrakt()
+            if movies:
+                for movie in movies:
+                    if not movie['watched'] and movie['watchers'] > 1:
+                          totalAdded = totalAdded + common.createMovieStrm(movie['title'], movie['year'], movie['imdb_id'])
+                          common.createMovieNfo(movie['title'], movie['year'], movie['imdb_id'])
+	if settings.getSetting("add_recommended") == True:
 		if fg == 'True':
-			common.Notification('Getting:','Recommended')
+			common.Notification('Getting:', 'Recommended')
 		movies = traktlib.getRecommendedMoviesFromTrakt()
 		if movies:
 		    for movie in movies:
-			totalAdded = totalAdded + common.createMovieStrm(movie['title'],movie['year'],movie['imdb_id'])
-			common.createMovieNfo(movie['title'],movie['year'],movie['imdb_id'])
+			totalAdded = totalAdded + common.createMovieStrm(movie['title'], movie['year'], movie['imdb_id'])
+			common.createMovieNfo(movie['title'], movie['year'], movie['imdb_id'])
+    if fg == 'True':
+            common.Notification('Getting:', 'Watchlist Movies')
 
-	if settings.getSetting("add_watchlistmovies"):
+    if settings.getSetting("add_watchlistmovies") == 'true':
 		if fg == 'True':
-			common.Notification('Getting:','Watchlist Movies')
+			common.Notification('Getting:', 'Watchlist Movies')
 		movies = traktlib.getWatchlistMoviesFromTrakt()
 		for movie in movies:
-			totalAdded = totalAdded + common.createMovieStrm(movie['title'],movie['year'],movie['imdb_id'])
-			common.createMovieNfo(movie['title'],movie['year'],movie['imdb_id'])
+			totalAdded = totalAdded + common.createMovieStrm(movie['title'], movie['year'], movie['imdb_id'])
+			common.createMovieNfo(movie['title'], movie['year'], movie['imdb_id'])
 
-	if settings.getSetting("add_watchlistshows"):
+	if settings.getSetting("add_watchlistshows") == 'true':
 		if fg == 'True':
-			common.Notification('Getting:','Watchlist Shows')
+			common.Notification('Getting:', 'Watchlist Shows')
 		totalAdded = totalAdded + getWatchlistShows()
 
 	if fg == 'True':

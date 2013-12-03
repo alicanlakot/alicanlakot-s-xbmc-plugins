@@ -17,26 +17,13 @@ class Search():
     def __init__(self):
         self.valids = 0
         self.results = []
+        self.qualities = []
         self.best_quality_result = None
+        self.oneClickSatisfied = False
         self.dirindex = -1
+        self.mediatype = None
 
-    def checkOneClick(self,SR):
-        if self.oneclick:
-            j,k = settings.getQualitysetting()
-            if SR.quality.value >= j and SR.quality.value < k:
-                self.best_quality_result = SR
-                SR.oneclick = True
-            else:
-                if (self.best_quality_result==None and SR.quality.value < j):
-                    SR.oneclick = False
-                    self.best_quality_result = SR
-                elif (self.best_quality_result==None and SR.quality.value > j):
-                    SR.oneclick = False
-                    self.best_quality_result = None
-                elif (SR.quality.value > self.best_quality_result.quality.value and SR.quality.value < j):
-                    SR.oneclick = False
-                    self.best_quality_result = SR
-        return
+
 
     def quality_options(self):
         return [i.text for i in self.results]
@@ -44,20 +31,14 @@ class Search():
     def fillOptions(self):
         while True:
             SR = self.checkNext()
+            if self.oneClickSatisfied == True:
+                break
             if SR == None:
                 break
 
     def oneClickResult(self):
-        while True:
-            SR = self.checkNext()
-            if SR == None:
-                break
-            if SR.oneclick:
-                break
-        if self.best_quality_result:
-            return self.best_quality_result
-        else:
-            return None
+        self.best_quality_result
+
 
     def checkNext(self):
         self.dirindex = self.dirindex + 1
@@ -66,19 +47,30 @@ class Search():
         return self.check()
 
 class SearchResult():
-    def __init__(self,myfile,quality,valid):
+    def __init__(self,search,mydir,quality,valid,myurl=None):
+        self.search = search
         self.valid = valid
-        self.file = myfile
+        self.dir = mydir
         self.quality = quality
-        self.oneclick = None
-        mysize = size(int(myfile['size']))
-        self.text = str('[' + mysize + '] '+str(quality) + ' ' + myfile['name'])
-
+        mysize = size(int(mydir['size']))
+        self.myUrl = myurl
+        self.text = '[{0}] {1} {2} {3}'.format(mysize,quality.value,str(quality),mydir['name'])
+        self.search.results.append(self)
+        if not self.quality in self.search.qualities:
+            self.search.qualities.append(self.quality)
+        self.checkOneClick()
+        #if self.search.best_quality_result == None:
+            #self.search.best_quality_result = self
     def __repr__(self):
         return self.text
 
+
+
     def mediaUrl(self):
-            files = furklib.fileInfo(self.file['info_hash'])
+        if self.myUrl:
+            return self.myUrl
+        else:
+            files = furklib.fileInfo(self.dir['info_hash'])
             for f in files:
                 myname = f['name']
                 #print myname
@@ -91,9 +83,24 @@ class SearchResult():
                     continue
             return None
 
+    def checkOneClick(self):
+        if self.search.oneclick:
+            j,k = settings.getQualitysetting()
+            if self.quality.value >= j and self.quality.value < k:
+                self.search.best_quality_result = self
+                self.search.oneClickSatisfied = True
+            else:
+                if (self.search.best_quality_result==None and self.quality.value < j):
+                    self.search.best_quality_result = self
+                elif (self.search.best_quality_result==None and self.quality.value > j):
+                    self.search.best_quality_result = None
+                elif (self.quality.value > self.search.best_quality_result.quality.value and self.quality.value < j):
+                    self.search.best_quality_result = self
+        return
 class MovieSearch(Search):
     def __init__(self, title,year,oneclick):
         Search.__init__(self)
+        self.mediatype = 'Movie'
         self.title = title.encode("utf-8")
         self.year = year
         self.oneclick = oneclick
@@ -125,7 +132,7 @@ class MovieSearch(Search):
         if not myYear:
             myYear = 0
             valid = False
-            
+
         title = unicodedata.normalize('NFKD',unicode(self.title,'utf-8')).encode('ASCII', 'ignore')
         #print 'T:' + title.lower()
         #print 'M:' + myName.lower()
@@ -134,9 +141,7 @@ class MovieSearch(Search):
 
         if valid:
             self.valids += 1
-            SR = SearchResult(file,myquality,True)
-            self.checkOneClick(SR)
-            self.results.append(SR)
+            SR = SearchResult(self,file,myquality,True)
             return SR
 
         else:
@@ -147,15 +152,12 @@ class ShowSearch(Search):
     def __init__(self, title,season,number,oneclick):
         Search.__init__(self)
         self.title = title
-        self.season = season
-        self.number = number
-
+        self.season = int(season)
+        self.number = int(number)
         self.oneclick = oneclick
+        self.mediatype = 'Show'
         query = '''{0} S{1:0>2}E{2:0>2}'''.format(self.title, self.season, self.number)
         self.dirs = furklib.searchFurk(query)
-
-
-
 
     def check(self):
         file = self.dirs[self.dirindex]
@@ -181,12 +183,8 @@ class ShowSearch(Search):
                 valid = True
             if valid:
                 self.valids += 1
-                SR = SearchResult(file,myquality,True)
-                self.checkOneClick(SR)
-                self.results.append(SR)
+                SR = SearchResult(self,file,myquality,True)
                 return SR
-
-
 
     def guess_series(self,title):
         """Returns a valid series parser if this :title: appears to be a series"""
@@ -227,6 +225,112 @@ class ShowSearch(Search):
                     #common.Notification('ParseWarning:' , pw.value)
                 if parser.valid:
                     return parser
+
+    def deepsearch(self):
+        dir_names = []
+        dir_ids = []
+        season_episode = "s%.2de%.2d" % (self.season, self.number)
+        season_episode2 = "%d%.2d" % (self.season, self.number)
+
+        tv_show_season = "%s season" % self.title
+        tv_show_episode = "%s %s" % (self.title, season_episode)
+
+        dirs2 = []
+        dirs2.extend(furklib.myFiles(self.title))
+        try:
+            dirs2.extend(furklib.searchFurk(tv_show_episode))
+        except:
+            pass
+        try:
+            dirs2.extend(furklib.searchFurk(tv_show_season))
+        except:
+            pass
+        try:
+            dirs2.extend(furklib.searchFurk(self.title))
+        except:
+            pass
+        for d in dirs2:
+            if self.valids>0:
+                continue
+            if d['is_ready']=='0':
+                continue
+            if not (d['name'].lower().startswith(self.title.lower())):
+                continue
+            dir_names.append(d['name'])
+            dir_ids.append(d['info_hash'])
+
+
+        if len(dir_names)>0:
+            idx = 0
+            for dirname in dir_names:
+                id = dir_ids[idx]
+                idx = idx + 1
+                self.filebyfile(id,dirname)
+        else:
+            pass
+
+    def filebyfile(self,id,dirname):
+        valid = False
+        title = re.sub(r'\([^)]*\)', '', self.title)
+        titletoCheck = functions.CleanFileName(title).lower().replace(' ','')
+
+        #print 'Dir:{0}'.format(dirname)
+        files = furklib.fileInfo(id)
+        if not files:
+            return
+
+        for f in files:
+            if self.oneClickSatisfied:
+                break
+            if len(self.qualities) >= 3 :
+                break
+            name = f['name']
+            path = f['path'].replace('/',' ')
+            mysize = size(int(f['size']))
+            if 'sample' in name.lower() or 'subs' in name.lower():
+                continue
+            play_url = f['url_dl']
+            valid = False
+            myquality = 'unknown Akin'
+            myParser= self.guess_series(name)
+            if not myParser:
+                myParser= self.guess_series(title + ' ' + name)
+            if not myParser:
+                myParser= self.guess_series(title + ' ' + path + name)
+            movie_name = dirname + ' ' + path + name
+            if myParser:
+                try:
+                    myParser.parse()
+                except:
+                    continue
+                myName = myParser.name
+                mySeason = myParser.season
+                myNumber = myParser.episode
+                myYear = 0
+                if myParser.quality: myquality = myParser.quality
+                myNametoCheck = functions.CleanFileName(myName).lower().replace(' ','')
+
+                movie_name = '''{0} {1} S{2:0>2}E{3:0>2}'''.format(myquality,myName, mySeason, myNumber)
+                movie_name2 = '''B:{0} {1} S{2}E{3}'''.format('unk',title, self.season, self.number)
+                clean_name = '''{1} S{2:0>2}E{3:0>2}'''.format(myquality,myName, mySeason, myNumber)
+                #print 'U: {0} S{1}E{2}'.format(myNametoCheck,mySeason,myNumber)
+                #print 'Y: {0} S{1}E{2}'.format(titletoCheck,season,number)
+                if not myNametoCheck.startswith(titletoCheck):
+                    #print 'break namecheck'
+                    break
+                if int(mySeason)==self.season and int(myNumber)==self.number:
+                    valid= True
+
+            if valid:
+                self.valids += 1
+                SR = SearchResult(self,f,myquality,True,play_url)
+                break
+            else:
+                continue
+        return
+
+
+
 
 
 

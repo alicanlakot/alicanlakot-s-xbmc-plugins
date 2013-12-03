@@ -1,17 +1,15 @@
-# 
+#
 
 from xml.dom.minidom import parse, parseString
-import urllib2,sys,re,urllib
+import sys,re,urllib
+from ext import requests
 from utils import regex_from_to,regex_get_all,get_url
 
 def watchlist_imdb(url,start):
     movies = []
-    try:
-        body = get_url(url, cache=".")
-    except:
-        print("IMDB URL request timed out")
+    body = get_url(url, cache=".")
     all_tr = regex_get_all(body, '<tr data-item', '</tr>')
-     
+
     for tr in all_tr:
         all_td = regex_get_all(tr, '<td', 'td>')
         imdb_id = regex_from_to(all_td[1], 'title/', '/')
@@ -39,7 +37,7 @@ def watchlist_movies(watchlist_url,start):
     url = "%s%s%s" % (watchlist_url, urllib.urlencode(params),"&sort=listorian:asc")
     movies = watchlist_imdb(url,start)
     return movies
-	
+
 def watchlist_shows(watchlist_url,start):
     params = {}
     nstart = str(int(start) + 250)
@@ -98,7 +96,7 @@ def getImdbAwards(type,year):
 	    else:
 		common.createListItem(imdb_number, False, '',len(winners)*2)
 	common.endofDir()
-        return 
+        return
 
 def addImdbToLib(fg):
 	if fg == 'True':
@@ -126,7 +124,7 @@ def imdbAction(params):
 		xbmcplugin.setContent(int(sys.argv[1]), 'movies')
 		page = params['page']
 		getImdbtop250(page)
-	
+
 
 	elif(params['action'] == 'imdb_TopRentals'):
 		xbmcplugin.setContent(int(sys.argv[1]), 'movies')

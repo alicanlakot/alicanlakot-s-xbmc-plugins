@@ -11,12 +11,12 @@
     <string id="30202">    Password</string>
     <string id="30203">    Hide successful login notifications</string>
     <string id="30300">Use custom directory</string>
-    <string id="30301">    Movie directory</string>	
+    <string id="30301">    Movie directory</string>
     <string id="30302">Use filters</string>
     <string id="30303">    Released later than</string>
     <string id="30304">    HD-only</string>
 	<string id="30400">Use custom directory</string>
-    <string id="30401">    TV show directory</string>	
+    <string id="30401">    TV show directory</string>
     <string id="30402">Use filters</string>
     <string id="30403">    Released later than</string>
 	<string id="30500">Best quality (Not implemented)</string>
@@ -26,7 +26,7 @@
     <string id="30602">    Get new episodes from favorite TV shows</string>
     <string id="30603">    Get new movies</string>
     <!-- Auto Update -->
-    <string id="40004">    Show notifications</string>
+    <string id="40005">    Show notifications</string>
     <string id="40001">    Add trending movies?</string>
     <string id="40002">    Add recommended movies?</string>
     <string id="40003">    Add watchlist movies?</string>
@@ -34,6 +34,6 @@
 	<!- OneClick -->
 	<string id="50000">One Click?</string>
 	<string id="50001">	   Quality</string>
-	
+
 </strings>
 

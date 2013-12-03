@@ -22,7 +22,6 @@ def get_url(url, params=None, referer=None, cookie_jar=None, cache=None, cache_t
             r = read_from_file(cache_file, silent=True)
             if r:
                 return r
-    
     if params:
         paramsenc = urllib.urlencode(params)
         req = urllib2.Request(url, paramsenc)
@@ -32,7 +31,7 @@ def get_url(url, params=None, referer=None, cookie_jar=None, cache=None, cache_t
     req.add_header('User-Agent', USER_AGENT)
     if referer:
         req.add_header('Referer', referer)
-        
+
     if cookie_jar:
         cj = cookielib.LWPCookieJar()
         try:
@@ -46,16 +45,16 @@ def get_url(url, params=None, referer=None, cookie_jar=None, cache=None, cache_t
         response = urllib2.urlopen(req)
     body = response.read()
     response.close()
-    
+
     if cache:
         write_to_file(cache_file, body)
-    
+
     return body
 
 def get_file_size(url):
     usock = urllib2.urlopen(url)
     size = usock.info().get('Content-Length')
-    if size is None:    
+    if size is None:
         size = 0
     size = float(size) # in bytes
     size = size / 1024.0# in KB (KiloBytes)
@@ -63,16 +62,16 @@ def get_file_size(url):
     size = size / 1024.0# in GB
 
     return size
-	
+
 def get_file_size_MB(url):
     usock = urllib2.urlopen(url)
     size = usock.info().get('Content-Length')
-    if size is None:    
+    if size is None:
         size = 0
     size = float(size) # in bytes
     size = size / 1024.0# in KB (KiloBytes)
     size = size / 1024.0# in MB
 
     return size
-	
+
 

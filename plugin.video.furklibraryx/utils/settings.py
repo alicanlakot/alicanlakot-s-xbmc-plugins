@@ -35,13 +35,13 @@ def getTimersetting():
 def getQualitysetting():
     quality_amounts = {}
     quality_amounts['0'] = 0
-    quality_amounts['1'] = 450
+    quality_amounts['1'] = 400
     quality_amounts['2'] = 750
     quality_amounts['3'] = 1200
     if ADDON:
             return quality_amounts[ADDON.getSetting("quality")], quality_amounts[str(int(ADDON.getSetting("quality")) + 1)]
     else:
-            return 0,1000
+            return 0,501
 
 def startTimer():
 	if ADDON.getSetting('auto_update') == "true":

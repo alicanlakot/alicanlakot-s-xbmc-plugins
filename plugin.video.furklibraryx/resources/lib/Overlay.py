@@ -99,8 +99,6 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         self.getControl(102).setVisible(False)
         self.background.setVisible(True)
         self.currentIdx=settings.getSetting('last_trailer')
-        if self.currentIdx == '':
-            self.currentIdx = 0
         
 
         self.playerTimer = threading.Timer(2.0, self.playerTimerAction)
@@ -110,6 +108,8 @@ class TVOverlay(xbmcgui.WindowXMLDialog):
         # self.myEPG.MyOverlayWindow = self
         # Don't allow any actions during initialization
         #self.actionSemaphore.acquire()
+        if self.currentIdx == '' or self.currentIdx > :
+            self.currentIdx = 0
         
     
     # Akin

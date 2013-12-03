@@ -13,9 +13,9 @@
 	    <setting id="auto_addImdb" type="bool" label="20005" default="false"/>
 		<setting id="imdb_watchlist" type="text" label="20004" default="ur*******" enable="!eq(-1,false)"/>
 	</category>
-	<category label="One Click Settings">
+	<category label="Quality Settings">
 	    <setting id="oneclick" type="bool" label="50000" default="false"/>
-		<setting id="quality" type="enum" label="50001" values="LOW|MED|MAX" default="MED" enable="!eq(-1,false)"/>
+		<setting id="quality" type="enum" label="50001" values="LOW|MED|HIGH" default="MED" enable="!eq(-1,false)"/>
 	</category>
 	<category label="Custom Directories">
 		<setting id="movie_custom_directory" type="bool" label="30300" default="false"/>
@@ -25,14 +25,13 @@
 	</category>
 	<category label="Auto-update Library">
 		<setting id="auto_update" type="bool" label="30600" default="false"/>
-		<setting id="autoupdate_notification" type="bool" label="40005" default="false"/>
-	    <setting id="update_timer" type="enum" values="1h|2h|5h|10h|15h|24h" label="30601" default="1" enable="!eq(-1,false)"/>
+		<setting id="update_timer" type="enum" values="1h|2h|5h|10h|15h|24h" label="30601" default="1" enable="!eq(-1,false)"/>
 	    <setting id="add_trending" type="bool" label="40001" default="false"/>
 	    <setting id="add_recommended" type="bool" label="40002" default="false"/>
 	    <setting id="add_watchlistmovies" type="bool" label="40003" default="false"/>
 	    <setting id="add_watchlistshows" type="bool" label="40004" default="false"/>
 	</category>
-	
+
 	<setting id="first_time_startup" type="bool" label="20003" default="true" visible="false"/>
 	<setting id="last_trailer" type="text" label="20003" default="0" visible="false"/>
 

@@ -2,7 +2,7 @@ import json
 import httplib
 import datetime
 import os
-
+from ext import requests
 import urllib
 import urllib2
 from xml.dom.minidom import Document
@@ -33,12 +33,17 @@ def getTraktConnection():
 # silent: default is False, when true it disable any error notifications (but not print messages)
 # passVersions: default is False, when true it passes extra version information to trakt to help print problems
 def furkJsonRequest(method, req, args={}, returnStatus=False, anon=False, conn=False, silent=False, passVersions=False):
+    if settings.getSetting("proxy") == 'true':
+        http_proxy = settings.getSetting("proxyurl")
+        https_proxy = settings.getSetting("proxyurl")
+        proxyDict = {
+              "http"  : http_proxy,
+              "https" : https_proxy
+            }
+    else:
+        proxyDict = {}
+
     apikey = settings.getSetting('furk_apikey')
-    closeConnection = False
-    conn = getTraktConnection()
-    print ("conn1")
-    closeConnection = True
-    print ("conn2")
     req = 'https://www.furk.net/api/' + req
     req = req.replace("%%API_KEY%%",apikey)
     if method == 'POST':
@@ -50,19 +55,17 @@ def furkJsonRequest(method, req, args={}, returnStatus=False, anon=False, conn=F
             jdata = json.dumps(args)
             print(req)
             print(jdata)
-            conn.request('POST', req, jdata)
+            request = requests.post(req, data=jdata , proxies=proxyDict)
     elif method == 'GET':
             jdata = json.dumps(args)
-            conn.request('GET', req, jdata)
-            print(req)
-            print("trakt json url: "+req)
+            request = requests.post(req, params=jdata , proxies=proxyDict)
+            #print(req)
+            #print("trakt json url: "+req)
     #conn.go()
 
-    response = conn.getresponse()
-
-    raw = response.read()
+    #print request.json()
     try:
-       data = json.loads(raw)
+       data = request.json()
     except:
        data = None
     if data == None:

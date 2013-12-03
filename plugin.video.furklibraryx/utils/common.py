@@ -1,13 +1,17 @@
 import os,sys,urlparse,re,time
-import xbmcgui,xbmc,xbmcplugin,xbmcaddon
+try:
+	import xbmcgui,xbmc,xbmcplugin,xbmcaddon
+except:
+	DEBUG = True
 from sites import traktlib
 import json
 #import SimpleDownloader as downloader
 
 # downloader = downloader.SimpleDownloader()
-CACHE_PATH= sys.modules[ "__main__" ].CACHE_PATH
-MOVIES_PATH = sys.modules[ "__main__" ].MOVIES_PATH
-TV_SHOWS_PATH = sys.modules[ "__main__" ].TV_SHOWS_PATH
+if not DEBUG:
+	CACHE_PATH= sys.modules[ "__main__" ].CACHE_PATH
+	MOVIES_PATH = sys.modules[ "__main__" ].MOVIES_PATH
+	TV_SHOWS_PATH = sys.modules[ "__main__" ].TV_SHOWS_PATH
 
 
 def RemoveDirectory(dir):
@@ -26,8 +30,9 @@ def RemoveDirectory(dir):
 def Notification(title, message):
         try:
                 xbmc.executebuiltin("XBMC.Notification("+title+","+message+")")
-                print message.encode("utf-8")
-        except: pass
+
+        except:
+        		print message.encode("utf-8")
         return
 
 def createMovieStrm(movietitle,movieyear,imdbid = 0):

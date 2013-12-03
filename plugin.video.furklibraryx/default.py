@@ -65,14 +65,14 @@ print sys.modules[ "__main__" ]
 
 def parse_qs(u):
 	params = '?' in u and dict(p.split('=') for p in u[u.index('?') + 1:].split('&')) or {}
-	
+
 	return params;
 
 def AddonMenu():  #homescreen
 	print 'FurkLibrary menu'
-	url = sys.argv[0]+'?action=' 
+	url = sys.argv[0]+'?action='
 	#common.createListItem(params['content_type'],True,url + 'myFiles')
-	
+
 	common.createListItem('My Files',True,url + 'myFiles')
 	common.createListItem('Search',True,url + 'search')
 	common.createListItem('Trakt',True,url + 'trakt_Menu')
@@ -91,7 +91,7 @@ def AddonMenu():  #homescreen
 def setup_sources():
     xbmc.log("Trying to add source paths...")
     source_path = os.path.join(xbmc.translatePath('special://profile/'), 'sources.xml')
-    
+
     try:
         f = open(source_path, 'a+')
 	f.seek(0)
@@ -114,7 +114,7 @@ def setup_sources():
 	        new_content += r.group(2)
 	else:
 	        new_content += '</video></sources>'
-        
+
         f = open(source_path, 'w')
         f.write(new_content)
         f.close()
@@ -126,7 +126,7 @@ def setup_sources():
     except:
 	raise
         xbmc.log("Could not edit sources.xml")
-        
+
 def check_sources_xml(path):
     try:
         source_path = os.path.join(xbmc.translatePath('special://profile/'), 'sources.xml')
@@ -138,7 +138,7 @@ def check_sources_xml(path):
         if re.search(path, content):
             return True
     except:
-        xbmc.log("Could not find sources.xml!")   
+        xbmc.log("Could not find sources.xml!")
     return False
 
 def setup():
@@ -156,11 +156,11 @@ def setup():
 		common.Notification('Tried again:',data['status'])
 	if len(settings.getSetting('furk_apikey')) < 5:
 		furklib.login(settings.getSetting('furk_login'),settings.getSetting('furk_password'))
-    
-	dialog.ok("Furk Library BY alicanlakot","..","You can start this again", "from menu")
-        settings.setSetting('first_time_startup', 'false')   
 
-xbmc.log('params_str=%s' % sys.argv[2])       
+	dialog.ok("Furk Library BY alicanlakot","..","You can start this again", "from menu")
+        settings.setSetting('first_time_startup', 'false')
+
+xbmc.log('params_str=%s' % sys.argv[2])
 params = parse_qs(sys.argv[2])
 if not params:
         params['action'] = 'dirs'
@@ -168,7 +168,7 @@ try:
 	action = params['action']
 except:
 	params['action'] = 'dirs'
-xbmc.log('_params=%s' % params) 
+xbmc.log('_params=%s' % params)
 
 
 if(params['action'] == 'about'):
@@ -250,7 +250,7 @@ elif(params['action'] == 'SearchMe'):
             episodedata = traktlib.getEpisodeInfo(tvdbid,season,episode)
         else:
             episodedata = None
-            
+
     elif type=='Movie':
         imdbid = params['imdbid']
         movie = common.getMovieInfobyImdbid(imdbid)
@@ -263,7 +263,7 @@ elif(params['action'] == 'SearchMe'):
     else:
 		type = 'Movie'
 		title = params['query']
-        
+
     go = False
     try:
         go = params['go']
@@ -272,7 +272,7 @@ elif(params['action'] == 'SearchMe'):
     except:
 		go = False
 
-	
+
 
     print go
     myname,myurl = searcher.SearchDialog(type,title,year,season,episode,go)
@@ -288,8 +288,8 @@ elif(params['action'] == 'SearchMe'):
         if movie:
 		          common.addMovieInfotoPlayListitem(listitem,movie)
 			#common.Notification("Found"," Movie!")
-			
-        elif episodedata:	
+
+        elif episodedata:
 			common.addEpisodeInfotoListitem(listitem,episodedata)
 
         xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),True,listitem)
@@ -314,10 +314,14 @@ elif(params['action'].startswith('music_')):
 
 
 elif(params['action'] == 'traktlib'):
+    try:
+        fg = params['fg']
+    except:
+        fg = 'True'
 	totalAdded = trakt.addToXbmcLib()
 	#totalAdded += imdb.addImdbToLib(fg)
 
-	if totalAdded>0:
+	if totalAdded>=0:
 		common.Notification('Furk-Trakt', '{0} were added'.format(totalAdded))
 	xbmc.executebuiltin('UpdateLibrary(video)')
 	if fg=='False':
@@ -335,9 +339,9 @@ elif(params['action'] == 'setup'):
 	settings.setSetting('first_time_startup','true')
 	FIRST_TIME_STARTUP = settings.first_time_startup()
 	setup()
-        
+
 else:
-        # torrents a root Directories 
+        # torrents a root Directories
         xbmc.log('argv=%s' % sys.argv)
 	if (MYCONTEXT == 'video'):
 		common.createCachePath()
@@ -345,7 +349,7 @@ else:
 		AddonMenu()
 	else:
 		music.AddonMenu()
-                
+
 
 print 'Closing FurkLib'
 #sys.modules.clear()
