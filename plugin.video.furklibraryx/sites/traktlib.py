@@ -31,7 +31,6 @@ def traktJsonRequest(method, req, args={}, returnStatus=False, anon=False, conn=
             }
 	else:
 		proxyDict = {}
-
 	req = 'http://api.trakt.tv' + req
 	req = req.replace("%%API_KEY%%", apikey)
 	req = req.replace("%%USERNAME%%", settings.getSetting('trakt_login'))
@@ -44,16 +43,17 @@ def traktJsonRequest(method, req, args={}, returnStatus=False, anon=False, conn=
                 args['plugin_version'] = __settings__.getAddonInfo("version")
                 args['media_center'] = 'xbmc'
                 args['media_center_version'] = xbmc.getInfoLabel("system.buildversion")
-                args['media_center_date'] = xbmc.getInfoLabel("system.builddate")
+                args['media_center_date'	] = xbmc.getInfoLabel("system.builddate")
             jdata = json.dumps(args)
             # print(req)
             # print(jdata)
             request = requests.post(req, data=jdata , proxies=proxyDict)
+
 	elif method == 'GET':
             args['username'] = settings.getSetting('trakt_login')
             args['password'] = settings.getSetting('trakt_password')
-            jdata = json.dumps(args)
-            request = requests.get(req, params=jdata, proxies=proxyDict)
+            request = requests.get(req, params=args, proxies=proxyDict)
+            print request.encoding
 
 	print 'Response: ' + request.content
 	#data = response.json()
@@ -316,6 +316,7 @@ def getProgress():
     #args['sort'] = 'activity'
     #args['extended'] = 'normal'
     data = traktJsonRequest('GET', '/user/progress/watched.json/%%API_KEY%%/%%USERNAME%%/all/activity/normal')
+    print data
     if data == None:
         print("Error in request from 'getProgress()'")
     return data

@@ -42,14 +42,14 @@ def addToXbmcLib(fg=None):
 			totalAdded = totalAdded + common.createMovieStrm(movie['title'], movie['year'], movie['imdb_id'])
 			common.createMovieNfo(movie['title'], movie['year'], movie['imdb_id'])
 
-	if settings.getSetting("add_watchlistshows") == 'true':
+    if settings.getSetting("add_watchlistshows") == 'true':
 		if fg == 'True':
 			common.Notification('Getting:', 'Watchlist Shows')
 		totalAdded = totalAdded + getWatchlistShows()
 
-	if fg == 'True':
+    if fg == 'True':
 		common.Notification('Total:', str(totalAdded))
-	return totalAdded
+    return totalAdded
 
 
 

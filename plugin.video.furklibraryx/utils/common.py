@@ -1,6 +1,7 @@
 import os,sys,urlparse,re,time
 try:
 	import xbmcgui,xbmc,xbmcplugin,xbmcaddon
+	DEBUG = False
 except:
 	DEBUG = True
 from sites import traktlib
