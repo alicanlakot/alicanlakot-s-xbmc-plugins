@@ -64,7 +64,12 @@ def SearchDialog(type,title,year,season,number,go=False):
 			pass #see what are our options
 	if  search.valids > 1 :
 		dialog = xbmcgui.Dialog()
-		quality_select = dialog.select('Select quality', search.quality_options())
+        if go: #list items as list item
+            for myresult in search.results:
+                common.createListItem(myresult.text, False, myresult.mediaUrl())
+            common.endofDir()
+        else:
+		    quality_select = dialog.select('Select quality', search.quality_options())
 	elif search.valids == 1:
 		common.Notification('Found only:',search.results[0].text.split(' ',1)[0])
 		quality_select = 0

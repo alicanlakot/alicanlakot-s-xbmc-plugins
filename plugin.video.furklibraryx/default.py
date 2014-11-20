@@ -286,13 +286,13 @@ elif(params['action'] == 'SearchMe'):
         listitem.setLabel(myname)
         listitem.setProperty("IsPlayable", "true")
         if movie:
-		          common.addMovieInfotoPlayListitem(listitem,movie)
+		    common.addMovieInfotoPlayListitem(listitem,movie)
 			#common.Notification("Found"," Movie!")
 
         elif episodedata:
 			common.addEpisodeInfotoListitem(listitem,episodedata)
 
-        xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),True,listitem)
+        #xbmcplugin.setResolvedUrl(int(sys.argv[ 1 ]),True,listitem)
         print myname
         print myurl
         if go:
