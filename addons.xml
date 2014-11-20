@@ -20,7 +20,7 @@
 <addon id="plugin.video.furklibraryx" version="1.4.0" name="Furk.net Library 2" provider-name="alicanlakot">
 	<requires>
 		<import addon="script.module.beautifulsoup" version="3.0.8"/>
-		<import addon="xbmc.python" version="2.0"/>
+		<import addon="xbmc.python" version="2.1.0"/>
 	</requires>
 	<extension point="xbmc.python.pluginsource"
 	           library="default.py">
